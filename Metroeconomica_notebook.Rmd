@@ -1,0 +1,3506 @@
+---
+title: "Commodities fluctuations, cross border flows, and financial innovation: A Stock-flow analysis"
+#date: "`r Sys.Date()`"
+authors:
+  - name: Lorenzo Nalin
+    email: nalin.lorenzo@gmail.com
+    address: National Autonomous University of Mexico (UNAM), Mexico.
+  - name: Giuliano Toshiro Yajima
+    email: giuliano.yajima@uniroma1.it
+    address: Department of Social Science and Economics (DISSE), Sapienza University of Rome, Italy. 
+    corresponding_author: yes
+abstract: |
+  At the beginning of the 2000s, Latin America countries experienced rising commodities prices and, in turn, foreign investors shifted part of their portfolio composition towards the region. Unlike past episodes, more integrated financial markets allowed international players to invest in a wider range of financial instruments, usually related to composite commodity indexes. We investigate the macroeconomic implications of such innovative practices, focusing in particular on currency swings, by adopting a Stock Flow Consistent (SFC) framework. The element of novelty of our contribution consists in depicting a financial sector which issues Commodity-Linked Notes (CLNs) to be sold to households in the developed country.  
+#acknowledgements: |
+  #This is an acknowledgement.
+
+  #It consists of two paragraphs.
+keywords:
+  - International Finance Forecasting and Simulation
+  - Foreign Exchange
+  - Macro-Based Behavioural Economics
+jel codes: 
+  - F37 
+  - F31 
+  - E7 
+#NOTE: add JEL codes directly to tex document generated with the command \jel{}
+#fontsize: 12pt
+#spacing: halfline # could also be oneline
+#classoptions:
+#  - endnotes
+bibliography: mybibfile.bib
+output: html_document #rticles::oup_article
+#csl: apa6thedition.csl
+header-includes:
+  - \usepackage{pdflscape}
+  - \newcommand{\blandscape}{\begin{landscape}}
+  - \newcommand{\elandscape}{\end{landscape}}
+#  - \usepackage[nomarkers,tablesfirst]{endfloat} # For figures and tables at end
+#  - \usepackage{lineno} # For line numbering
+#  - \linenumbers # For line numbering
+link-citations: true
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE) # By default, hide code; set to TRUE to see code
+knitr::opts_chunk$set(fig.pos = 't') # Places figures on pages separate from text
+knitr::opts_chunk$set(out.width = '100%', dpi=300) # Figure resolution and size
+knitr::opts_chunk$set(fig.env="figure") # Latex figure environment
+```
+
+# Introduction
+
+
+```{r, include=FALSE}
+#install.packages("EviewsR")
+#install.packages("sfcr")
+#install.packages("ggplot2")
+#install.packages("gridExtra")
+
+library(EviewsR)
+library(sfcr)
+library(ggplot2)
+library(gridExtra)
+library(tidyverse)
+library(kableExtra)
+library(grid)
+
+grid_arrange_shared_legend <- function(..., ncol = length(list(...)), nrow = 1, position = c("bottom", "right")) {
+
+  plots <- list(...)
+  position <- match.arg(position)
+  g <- ggplotGrob(plots[[1]] + theme(legend.position = position))$grobs
+  legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
+  lheight <- sum(legend$height)
+  lwidth <- sum(legend$width)
+  gl <- lapply(plots, function(x) x + theme(legend.position="none"))
+  gl <- c(gl, ncol = ncol, nrow = nrow)
+
+  combined <- switch(position,
+                     "bottom" = arrangeGrob(do.call(arrangeGrob, gl),
+                                            legend,
+                                            ncol = 1,
+                                            heights = unit.c(unit(1, "npc") - lheight, lheight)),
+                     "right" = arrangeGrob(do.call(arrangeGrob, gl),
+                                           legend,
+                                           ncol = 2,
+                                           widths = unit.c(unit(1, "npc") - lwidth, lwidth)))
+
+  grid.newpage()
+  grid.draw(combined)
+
+  # return gtable invisibly
+  invisible(combined)
+
+}
+
+```
+
+
+Latin American countries (LACs) have a long history of procyclical portfolio flows, balance of payments crises, and currency devaluations. Recently, in 2014, once again, history repeated itself, even though it took some different connotations. At the beginning of the 2000s, LACs experienced rising commodities prices, and, in turn, foreign investors shifted part of their portfolio composition towards LACs securities in search of higher yields. Unlike past episodes, the increasing role of financial integration and sophistication in Latin American has allowed international investors to have a wider range of financial instruments in which to invest [@epstein_financialization_2005; @unctad_debt_2017; @gallagher_financialization_2014]. Apart from the traditional government bonds, new asset categories have appeared such as derivatives, exchange traded funds (ETFs) and structured notes. 
+
+There are two main consequences for currencies in developing countries for deeper integration and sophistication in financial markets. On one hand, there are greater inflows and outflows of foreign capital into the domestic financial system, favored by the elimination of entry/exit barriers in the capital account. These flows influence the demand for the domestic currency and, therefore, its value. On the other hand, there is a greater sensitivity of domestic financial markets, and thus their currency, to international financial conditions. Expectations about geopolitical and financial events can play an even more important role then the macroeconomic situation of the domestic country.
+
+Not only integration and sophistication in regional financial markets, but also international liquidity contributed to direct portfolio flows to Latin America.  The expansionary monetary policies adopted by the major central banks in the aftermath of the 2008 financial crisis led investors in advanced economies to have at their disposal a great amount of liquidity, which they used to seek higher returns in emerging countries. As a result, flows to Latin America countries increased even more. However, starting from 2012, the international macroeconomic and financial context changed. The end of the commodities booms together with the start of a hawkish monetary policy in the United States (US) modified the risk sentiment of international investors, shifting portfolio flows towards advanced economies again. To explain our interest in studying the implication of capital flow procyclicality and exchange rate fluctuations we focus on Chile. 
+
+From 2003 to 2010, Chile received on average approximately 7.5 US billion dollars in portfolio inflows per year and its currency appreciated in nominal terms by 26% at the end of the period. However, from 2011 to 2016 the country experienced an average monthly outflow of almost 2 billion dollars, while the currency lost 40% of its nominal value. Following the tradition of Stock Flow Consistent model (SFC) described in Godley and Lavoie [@godley_comprehensive_2005; @godley_monetary_2012], we build a two-country model to investigate the impact of cross-border financial transactions on the currency of a small-open, financially integrated, peripheral economy during a commodity-boom period, in the spirit of the Structuralist-post Keynesian literature.
+
+The element of novelty of our contribution consists in depicting a financial sector that issues Commodity-Linked Notes ($CLNs$) to be sold to rentier households in the developed country. 
+
+This paper is divided as follows: in section \ref{stylized-facts}, we will present some stylized facts on the exchange rate fluctuations in Chile and the role played by the increasing weight of financial securities in this economy. Section \ref{theoretical-justification} will provide a justification for the adoption of our framework. Section \ref{methodology} will describe the transition flow matrix and detail the main equation of the model. In section \ref{scenario-analysis} we will perform our scenario simulation, while in section \ref{conclusions} we sum up our findings.
+
+
+# Stylized facts
+
+Emerging commodity-export economies are particularly sensitive to the macroeconomic and financial environment, especially when it comes to define the value of their currency. There is a relationship between the value of the currency and the price of the commodity the country exports. During a commodity boom period, the commodity-export economy experiences strong inflows, followed by sudden capital outflows as soon as the boom is over. Under the present financial-integrated environment, this process is exaggerated by the presence of financial derivative contracts, which are securities that have the power to create liquidity as quickly as they can drain it. 
+
+Evidence regarding the aspects described above are well documented in the work of @gallagher_financialization_2014 for Brazil, @ffrench2018reformas for Chile, @botta2017dutch for Colombia and @perez_caldentey_monitoring_2017 for Mexico. In what follows, we will analyze some stylized facts for Chile, to show some the interconnection between commodity prices, currency, and derivatives markets. 
+Chile is a small-open economy that depends heavily on copper. Both ore and refined copper represent roughly 40 percent of its export. From 2004 to 2013, the price of basic products and raw materials experienced an expansionary phase; as a result, the price of copper rose from 1 to 5$ per pound During this period, Chile received on average roughly 7.5 US billions of dollars in portfolio inflows per year, according to the Bank of International Settlements (BIS) (2019). 
+As a matter of fact, Chile has adopted, long before other economies in the region, macroeconomic policies oriented at opening both current and capital account. This permits to evaluate not only the short run consequences of such measures, but also the long run impact. For instance, the country experiences three surges in capital inflows (1973 – 1982; 1989 – 2001/2001; 2003 – 2012) culminated with major adjustments, generated by flow reversals. Ultimately, portfolio outflows generated mayor correction in the value of the currency. What characterized the last cycle (2003-2012) is the closeness of the Chilean Peso with commodity derivative markets and the surge of forex derivative flows. 
+
+In \ref{fig:fig1} we report the Chilean peso and the Thomson Reuters commodity index, a commodity future price index that replicates derivatives contract for 28 commodities. The graph shows a close relationship between derivatives markets (futures prices) and the nominal value of the currency. From 2003 to 2014, the value of the currency tightly followed the trend of forward commodity markets. As future prices increased from 2002 until 2007 – implying bullish expectations for commodity markets – so did the Chilean peso and when futures prices stabilized, 2009-2013, the nominal exchange fluctuated around 470 pesos per dollar. Overall, from 2003 to 2013 the currency roughly 30 appreciated percent. 
+
+
+
+```{r fig1, fig.cap="\\label{fig:fig1}Chilean Peso and Thomson Reuters CRB commodity Index. Source: Bloomberg.", echo=FALSE, results='asis', fig.align='center'}
+library(knitr)
+include_graphics("C:/Users/Giuliano Toshiro/OneDrive - uniroma1.it/images/immagini thesis/Diapositiva14.png")
+```
+
+Higher prices in future commodity market were accompanied by increasing volumes in of FOREX derivatives . Figure \ref{fig:fig2} reports the daily turnover of Over the Counter (OTC) currency derivatives for Chile (BIS, 2019).
+By definitions, over the counter contracts are non-standardized contracts traded outside official exchanges. They are customized agreements between two parties with no institutional intermediaries involved. These contracts have been gaining importance since the increase in regulations for those derivatives traded in stock exchange. The visual inspection of the series presents the procyclicality of OTC contracts, which increased uninterruptedly during the expansion of commodity prices, but dissipate quickly as soon as the bonanza ended in 2013. 
+From 1998 to 2003, the volume of Foreign Exchange (FX) operation carried out in Over the Counter (OTC) markets was stable around 2.5 US billions of dollars per day. Starting the commodity boom, however, the volume increased from 2.5 to 6 billion per day. The traded volume accelerated quickly starting in 2010, right after the adoption of extraordinary expansive monetary policies. Indeed, from 2010 to 2013, the volume doubled from 6 to roughly 12 billion. In 2013, with the fall in commodity prices and restrictive monetary policy in the U.S., there was a shift in the preferences of international investors. As a result, capital flows moved from Chile to developed markets, causing the daily average volume of OTC derivatives to decrease by 4 billion, reaching a daily average turnover of 8 billion in 2016. 
+
+
+```{r fig2, fig.cap="\\label{fig:fig2}Currency Derivatives Turnover. Data source: Bank of International Settlement (BIS).", echo=FALSE, results='asis', fig.align='center'}
+library(knitr)
+include_graphics("C:/Users/Giuliano Toshiro/OneDrive - uniroma1.it/images/immagini thesis/Diapositiva15.png")
+```
+
+
+
+# Theoretical justification
+
+To understand the financial effects of a commodity boom (and bust), we rely on the Stock-Flow Consistent (SFC) methodology that allows us to monitor the effect of external flows, stocks and prices on several channels through which they impact the economy. SFCs are dynamic, medium-scale Keynesian macro-econometric models based on a rigorous accounting framework, which integrates the flows and stocks of a financially sophisticated economy [@caverzasi2013stock; @godley_monetary_2012; @nikiforos2017stock; @carnevali2019stock]. There are four reasons upon which we opted for this methodology. 
+
+First, the SFC modeling ensure the model consistency, which @nikiforos2017stock and @zezza_design_2019 resume in four principles: (i) the flow consistency, i.e. that every flow must come from somewhere and goes somewhere else – for example, in open economy model, exports of one country are the imports of another one; (ii) the stock consistency, i.e. that every asset owned by an agent (sector) is the liability of another one in the system: (iii) The stock-flow consistency, i.e. that every flow implies the change in one or more stocks; (iv) the quadruple entry, i.e. that every transaction is recorded four times in the accounting matrix, for instance twice as a flow of expenditure and twice as a change of asset or increase of liabilities.
+
+A second reason to opt for SFC models is the encompassment of a portfolio approach to evaluate how financial flows condition the trajectory of the real exchange rate (RER). The portfolio approach is useful to analyses the impact of flows, expectations and returns on the value of the currency and the response requested from monetary authority to maintain the stability in the currency as shown in the works of @dornbusch_exchange_1975 [@dornbusch_expectations_1976], @tobin1980short, @de_macedo_optimal_1983, and @owen_money_1986.  According to these works, the reason financial flows move from one asset to another is the search of yield by international investors. They allocate their portfolio according to their wealth and expectations on asset returns. Assets are not perfect substitute, and asset preferences require to be modeled trough specific portfolios constraints. Those constraints allow the model to allocate the total wealth according to investors’ preferences and risk aversion. In addition, in portfolio models, savings allocation depends on long-run target in holding for each asset. Thus, if households hold less assets than their target level, they will adjust their portfolio accordingly to close the gap (respecting their budget constraint)^[@tobin_money_1982 would observe that the consistency constraint is not always explicitly observed in theoretical and statistical models for portfolio estimations.] . 
+
+Third, it properly addresses center-periphery asymmetries existing in the current global environment, both in the real and the financial sphere. For instance, the permanent difference in trade specialization which translates into a de facto technological lock-in for catching-up countries; the different behavior and performance of the exporting sectors with respect the rest of the local peripheral economies; the role of central banks in developed and developing countries or the different stock of wealth countries may own; and the role of international safe assets such as the dollar and the existence of a hierarchy of currencies. This follows a long-standing tradition in developing economics, which dates to influential authors such as @verdoorn_factors_2002, @singer_distribution_1950, @prebisch_desarrollo_1949, @kaldor1966causes [@kaldor_case_1970] and @dixon_model_1975.
+
+Finally, it allows to departure from conventional theories of exchange rate determination, with respect to both the fulfillment of the Uncovered Interest Parity condition (UIP)^[UIP asserts that, if there is freedom of capital movements and government bonds are perceived as substitutes, then interest rate differentials between two countries are equal to the expected exchange rate depreciation. According to this theory, higher rate differentials imply an expected depreciation. However, there is ample empirical evidence that this prediction is not fulfilled [@moosa2004international]; on the contrary, it has been shown that in the long-term higher interest attract inflows and appreciate the currency [@harvey_currencies_2009]. CIP is rather preferred to UIP. According to CIP, there is a close relationship between interest rates, spot rates and forward rates as assets are not homogeneous and investors hedge currency risk through derivative markets.]  and the existence of a long-run equilibrium position for the value of the currency. As a matter of fact, the conventional theory about the determinants of the real exchange rate is characterized by three elements: a) the focus on real determinants; b) the existence of an equilibrium value towards which the currency converges in the long term; c) the absence of an explicit role for financial speculative capital in the long-term analysis, as they are generally considered transitory, short term elements^[We Refer to the analysis put forward by @clark1999exchange Behavioural Equilibrium Exchange Rate (BEER) model, @stein1999evolution Natural Real Exchange rate (NATREX), or @williamson1994estimating Fundamental Equilibrium Exchange Rates (FEER). For a detailed theoretical explanation of these models, it is recommended to review @macdonald2000concepts.]. On the contrary, our analysis focuses mainly on two aspects, namely: i) the determinants of the demand to hold currency; ii) the importance of financial, speculative flows. It permits to combine Tobin’s portfolio balance approach with the treatment of expectations and preferences over foreign denominated assets by @harvey_currencies_2009 and @westerhoff_exchange_2009. In certain way this could be defined a Minskyan approach to the determination of the exchange rate as the latter is considered a procyclical variable that follows closely financial flows cycle and displays boom-and-bust trends [@minsky_john_1975; @minsky1992financial; @minsky_essential_1996].
+ 
+In fact, the central tenet of our framework is that abrupt changes in the portfolio composition of households towards (against) more complex financial products based on the price of commodities could lead to destabilizing dynamics in the exchange rate and in the current account of developing countries. As a result, the very notion of a stable attractor for the former is, in our opinion, at best questionable and should be replaced with a wider analysis of its determinants, especially the financial ones. The nominal exchange rate determination process described above allow us to reject the conclusion of @dornbusch_expectations_1976 overshot model, which stressed that any shock will be absorbed by the interplay of the demand and supply of assets, bringing back the exchange rate to an equilibrium path governed by UIP considerations. In fact, as @lavoie_post-keynesian_2014 suggests, the forward exchange rate is not a variable that truly reflects expectations, but rather a simple mathematical rule applied by financial operators to hedge against risks. Hence, it turns out that it does not affect the change of stocks or the reserve account. This is in accordance with the Cambist view on forward exchange markets, which holds that interest rates are set exogenously by Central Banks, while forex dealers decide how much the spread between the spot and forward rate will be based on the interest rate differentials.
+
+As we mentioned, full consistency of the models requires modeling a second economy that can be able to reproduce the real and financial interactions among the institutional sectors. Thus, in a sense, a multi-country approach, is embedded in the open economy framework of SFC models. @godley_two-country_2003 [@godley_comprehensive_2005; @godley_monetary_2012] progressively built upon the original Godley’s contribution - as well as his policy works written during his collaboration at the Levy - to provide a more realistic representation of how two regions co-evolve. The standard two-country augmented model, known also as the “Chapter 12” of Godley and Lavoie’ Monetary Economics book, has been extended qualitatively, with the behavioral development proposed by @lavoie_behavioural_2011 and @ramos2020bet; the analyses of @bonizzi1915institutional and @bortz2014foreign on pension funds and foreign debt, respectively (see below); the reassessment of the Marshall-Lerner condition by @carnevali2019stock; and quantitatively, with multi-country frameworks developed by @lequain2003three, @izurieta_dollarization_2003, @lavoie_study_2010, @mazier_world_2012, @valdecantos2015reforming. The first two are simply an extension of the Chapter 12, with the novelty that two countries share the same currency. The third and the fourth contribution introduce for the first time a three-country model comprising US, the Eurozone and China to study the effect of reserve diversification of the latter, while the fifth one discusses the effects of different exchange rate parities among these countries. 
+
+
+# Methodology
+
+Following @godley1996simple [@godley_open_1999], @godley_two-country_2003 [@godley_comprehensive_2005; @godley_monetary_2012], @izurieta_dollarization_2003, we describe two simple economies, Chile ($CHL$) and Rest of the World ($RoW$)^[While the inclusion of an additional “$RoW$” economy greatly increases the size of our model, it allows us to model with more precision both the portfolio decisions of the foreign households and the cross-border operations of the financial intermediaries, as it will be clarified in the following paragraphs. Another possibility would have been to identify the second economy as the main partner of the Chilean economy in terms of its balance of payment linkages. Yet, if the inspection of the net export flows points out towards China as the main partner [@wb_chile_nodate], the presence of a high share of dollar-denominated flow of funds, in particular in the non-banking sector [@fernandez2020external; @portales2021chile], highlights instead the strong connections with the US from a financial account standpoint. Thus, a proper characterization of the nationality of the second economy is out of the scope of the present work.] . Table \ref{tab:1} and \ref{tab:2} report balance sheet and transaction flow matrix of the model, respectively. Both economies are composed by five sectors – government, central banks, firms, financial intermediaries, and households – and six assets – money, deposits, foreign and domestic bills and two securities called “Commodity Linked Notes” ($CLNs$) and “Derivative” ($DER$). 
+
+The transaction-flow matrix reports the interchange of flows within sectors and countries. Consumption ($C$), government expenditure ($G$), trade (imports, $M$ minus exports, $X$), and taxes ($T$) compose total output. The latter is distributed to households in the form of total income ($Y$). Households also receive profits from the financial intermediaries as compensation for holding financial assets. They additionally receive interest payments on the stock of securities previously accumulated. In this sense, the model relies on the Haig-Simons’ definition of income [@godley_monetary_2012], that is, income does not only come from the real sector but also considers financial gains. Households spend income between two outflows, namely, consumption (which feeds back entirely into the production sector) and government taxes.
+ 
+Each period, firms and households pay taxes, which represent a positive inflow for the government. The government is responsible for public expenditure to provide services to the entire economy. In case the government spends more than it collects ($T-G<0$ ), it issues bills ($B$) and obtains liquidity from the public. Domestic bills are distributed to domestic households, central banks, and foreign financial investors. Households and foreign investors buy government bills to allocate their wealth and diversify their portfolios, while the domestic central bank buys the portion of unallocated bills — in practice, the domestic central bank steps in to absorb the gap between the supply of and demand for domestic bills. 
+ 
+Central banks also accumulate foreign bonds as strategic reserves; however, as the dollar is the reserve currency due to the so-called hierarchy of currency [@kaltenbrunner_post_2015], the $RoW$ central bank only needs to hold domestic bills, while the $CHL$ central bank holds domestic and foreign bills as reserves. As a result, there is an asymmetry in the central banks’ profits, that is, $CHL$ central bank also receives interest on foreign bills. Both central banks, however, return profits received on bills to their respective governments to relax their budget constraint.
+
+The novelty of our model is the presence of structured notes,^[The US Security Exchange Commission [@us_security_exchange_commission_investor_nodate] defines structured notes as “securities issued by financial institutions whose returns are based on, among other things, equity indexes, a single equity security, a basket of equity securities, interest rates, commodities, and/or foreign currencies.  Returns on this type of security are “linked” to the performance of a reference asset or index”.]  $CLNs$, which are ad-hoc financial products sold to domestic households and generated through securitization carried on by the financial sector. Specifically, in the model the term structured note refers to *hybrid notes that combine multiple characteristics*. 
+
+
+Commodity Linked Notes ($CLNs$) are structured notes whose payoffs might vary according to a set of rules established between parties and connected, directly or not, to commodity markets behavior [@henderson_new_2015]. As we seen in the previous section, international investors increase their holding for OTC derivative contracts in presence of commodity price boom and abundant international liquidity. Thus, we use $CLNs$ as a proxy to include in the balance sheet of our model a financial product that replicates pro-cyclical, commodity-related financial behaviors: the appetite for it increases during periods of favorable terms of trade (higher export prices), but rapidly disappears as export commodity prices adjust downward. The reason to include such a type of asset is to stress on the cyclicality of financial portfolio flows in the presence of financial integration. Notice, that we are not attempting to replicate any specific asset existing in the Chilean financial market. Rather, we include the $CLN$ asset attempting to imitate a behavior of international investors towards Chilean derivative markets within the specific context of commodity price cycles.
+
+The assumptions behind the definition of structured notes are also meant to capture the process of securitization carried out by transnational banks and investment funds.^[In this sense, financial intermediaries here represented are focused on “originate-to-distribute” kind of operations, rather than the standard “originate-to-hold” ones. For the sake of simplicity, the financial sector modeled here does not expressively consider commercial banks, as their role in distributing financial instruments to households would be marginal.]  Their role is to offer financial products to the public and to do so, they can securitize assets^[According to @cardone2010 three reasons exist for securitization: i) need for liquidity; iii) minimize credit risk; iii) search for new profitable opportunities. ] , i.e., they can pool assets to create new financial securities and sell them to investors [@caverzasi2019]. Specifically, $CLNs$ are distributed to $RoW$ household sectors, which account for them as an asset. The process of securitization follows the logic that financial $RoW$ intermediaries buy $CHL$ bills to securitize them in a new product denominated in foreign currency whose price not only depends on the yield of $CHL$ bills, but also follows the dynamic of commodity markets.^[The bottom of the transaction flows matrix illustrates securitization. The process develops between column 9 ($CHL$ government sector), column 3 ($RoW$ financial sector), and column 1 ($RoW$ households). $CHL$ government issues debt to finance deficits ($\Delta B$). Part of the debt is acquired by $RoW$ financial intermediaries ($\Delta B_b^{RoW}$). The latter use a fraction of the bills acquired to create the structured notes ($\Delta CLN$), which is ultimately allocated to $RoW$ households’ wealth ($V^{RoW}$). As a result, $CLNs$ are liabilities for $RoW$ financial intermediaries, which is backed by foreign bills as a collateral. There is also a change in deposits, in the third row of the balance sheet as households are required to deposit part of their money to invest in financial securities. ]
+
+The price for $CLN$ ($P_{cln}$) is therefore defined as follows:
+
+\begin{equation}\label{eq:1}
+\tag{1}
+P_{cln}=\frac{1}{r_{cln}}+{p}_{x}^{{CHL}}
+\end{equation}
+
+In equation \ref{eq:1}, we assume that the price of $CLN$ depends on the natural logarithm of export prices, which is used as a proxy for export commodity prices. When commodity-export countries experience a boom, it is often associated with higher export prices. That is, commodity export countries tend to have limited diversification in the basket of exported goods, thus we consider the price of export correlated to international commodity cycles. The prices of exports are reported in equation 2 alongside import prices, which are both borrowed from @godley_monetary_2012. Variables in bold are natural logarithms, a transformation that allows to introduce in the model the trade elasticities; hence, export (imports) prices for $CHL$ goods (eq. \ref{eq:2}) depend upon an exogenous component, the nominal exchange rate, and domestic and foreign prices, respectively^[Notice that equations (\ref{eq:2}-\ref{eq:5}) may be read, alternatively, as a decomposition of the total effect of the RER on the relationship between export (import) prices and domestic prices, that is ${p}_{x}^{CHL}{-{p}}_{y}^{{CHL}}=\chi_0^{CHL}+\ \chi_1^{CHL}\ast{{RER}}^{RoW}$ (${p}_{m}^{CHL}{-{p}}_{y}^{{CHL}}=\mu_0^{CHL}+\ \ \ \mu_1^{CHL}\ast{{RER}}^{RoW}$). ] . For the sake of completeness, we report the log-transformed trade quantities equations, a formulation first adopted by @houthakker1969income and successively by @godley_monetary_2012. An increase in the price of commodities implies an improvement of the term of trade (given by $p_x^{CHL}/ p_m^{CHL}$). This logic implies a positive relation between $CLN$ and exports price. The price formula states that as commodity prices increases, the $CLN$’s price rises. 
+ 
+
+*Export and Import real quantities*
+
+\begin{equation}\label{eq:2}
+\tag{2}
+{p}_{x}^{{CHL}}=\ \chi_0^{CHL}+\ \ \chi_1^{CHL}\ \ast{p}_{y}^{{RoW}}\ \ +\ (1-\ \chi_1^{CHL})\ast{p}_{y}^{{CHL}}\ -\ \chi_1^{CHL}\ast{{xr}}^{{CHL}}
+\end{equation}
+
+\begin{equation}\label{eq:3}
+\tag{3}
+{p}_{m}^{{CHL}}=\ \mu_0^{CHL}+\ \ \mu_1^{CHL}\ \ast{p}_{y}^{{RoW}}\ \ +\ (1-\ \mu_1^{CHL})\ast{p}_{y}^{{CHL}}\ -\ \mu_1^{CHL}\ast{{xr}}^{{CHL}}
+\end{equation}
+	
+\begin{equation}\label{eq:4}
+\tag{4}
+{x}^{{CHL}}=\ \epsilon^{CHL}\ -\ \eta^{CHL}\ \ast({p}_{{m}-\mathbf{1}}^{{RoW}}-{p}_{{y}-\mathbf{1}}^{{RoW}})\ +\ \varepsilon^{CHL}\ast{y}^{{RoW}}
+\end{equation}
+
+\begin{equation}\label{eq:5}
+\tag{5}
+{m}^{{CHL}}=\ \varrho^{CHL}\ -\ \psi^{CHL}\ \ast({p}_{{m}-\mathbf{1}}^{{CHL}}-{p}_{{y}-\mathbf{1}}^{{CHL}})\ +\ \pi^{CHL}\ast{y}^{{RoW}}
+\end{equation}
+
+Therefore, the price logic for the structured notes impacts currency fluctuations by cyclically varying currency demand. To better understand this logic, we report portfolio equations. Assets demand of households in the two countries follows the principles put forward by @brainard1968pitfalls. They are expressed in the usual matrix form, wherein the vertical and horizontal constraints must be respected at once. The former implies that the sum of the autonomous and non-autonomous coefficients must add up to one and zero respectively, while the latter postulates that also the non-autonomous coefficients within the demand for each asset must yield zero. 
+
+*Asset demand for RoW  residents*^[  Each portfolio is composed by two elements, namely: an exogenous vector ($\lambda_{i0}$), the response of assets to change in yields ($\lambda_{ik}$). According to @brainard1968pitfalls, @tobin_general_1969 [@tobin_money_1982] @backus1980model, for the vertical constraint to be realized it must be that $\lambda_{10}^i+\lambda_{20}^i+\lambda_{30}^i=1$ and $\lambda_{1k}^i+\lambda_{2k}^i+\lambda_{3k}^i=0$, while the horizontal constraint implies $\lambda_{j1}^i+\lambda_{j2}^i+\lambda_{j3}^i=0$.]
+
+\begin{equation}\label{eq:6}
+\tag{6}
+\left[\begin{matrix}B_{RoW_d}^{RoW}\\D_{_d}^{RoW}\\P_{cln}\ast{CLN}_{_s}\\\end{matrix}\right]=\left[\begin{matrix}\ \lambda_{10}^{RoW}\\\lambda_{20}^{RoW}\ \\\lambda_{30}^{RoW}\ \\\end{matrix}\right]\ast V^{RoW}+\left[\begin{matrix}\lambda_{11}^{RoW}&\lambda_{12}^{RoW}&\lambda_{13}^{RoW}\\\lambda_{21}^{RoW}&\lambda_{22}^{RoW}&\lambda_{23}^{RoW}\\\lambda_{31}^{RoW}&\lambda_{32}^{RoW}&\lambda_{33}^{RoW}\\\end{matrix}\right]\ast\ \left[\begin{matrix}r^{RoW}\\r_d^{RoW}\\r_{cln}+{{DP}_{cln}}^e\\\end{matrix}\right]\ast V^{RoW}
+\end{equation}
+
+Notice that the demand for structured notes ($P_{cln}\ast{CLN}_{_s}$) depends on their yield; the latter is given by the interest paid on the asset plus its expected price change ($r_{cln}+{{DP}_{cln}}^e$).  As mentioned in @godley_monetary_2012 and in the spirit of the literature from @tobin_money_1982, the present portfolio specification considers adaptive expectations. That is,
+
+\begin{equation}\label{eq:7}
+\tag{7}
+{{DP}_{cln}}^e=\Delta P_{cln}/ P_{cln}
+\end{equation}
+	
+When the yield paid on structured notes raises, so does the allocation of $RoW$’s portfolio towards Chilean structured assets at the expanse of deposit and domestic bills. The coefficient $\lambda_{33}^{RoW}$ indicates the speed of portfolio adjustment for this asset. A similar result is also obtained when international investors expect the price of $CLNs$ to rise due to exchange rate appreciation (${{DP}_{cln}}^e$) 
+
+When $RoW$ households desire to hold more $CLNs$, $RoW$ intermediaries need to securitize more Chilean bills. Thus, the demand for $CHL$ bills from the financial sector in the $RoW$, $B_{bRoW_d}^{CHL}$, responds to the stock of $CLN$ supplied according to the $\rho_1^{RoW}$ coefficient, which is meant to capture the exposure of Chilean intermediaries when issuing these structured notes^[The adopted functional form for (\ref{eq:8}) is consistent with the assumption made for the behavior of financial intermediaries, who do not seek to retain their earnings, as they immediately redistribute profits to households. Yet, cross-border banks may be interested in demanding foreign assets in order to obtain capital gains on the exchange rate and not simply to securitize in another financial product. Hence, we included in our sensitivity analysis a different specification whereby $B_{bRoW_d}^{CHL}$ depend upon the expected capital gains alongside the supply of $CLNs$. ] .
+
+\begin{equation}\label{eq:8}
+\tag{8}
+B_{bRoW_d}^{CHL}=\rho_1^{RoW}\ast{CLN}_{_s}
+\end{equation}
+
+If we define the exchange rate as the ratio of bills demanded and offered to the foreign investors^[This is a standard procedure in SFC models inspired by Chapter 12 of @godley_monetary_2012, even though some other procedure exists [@carnevali2019stock; @godin2020afd; @valdecantos2020argentina] , then the introduction of structured notes such as $CLNs$ has a direct consequence of demand for currency. Ultimately, the price logic for the structured notes impacts currency fluctuations by cyclically varying currency demand. As $B_{bRoW_d}^{CHL}$ rises, the ${xr}^{CHL}$ appreciates. Notice that in this model a nominal appreciation (depreciation) is therefore accounted by a higher (lower) ${xr}^{CHL}$.
+
+\begin{equation}\label{eq:9}
+\tag{9}
+{xr}^{CHL}=\ \frac{B_{bRoW_d}^{CHL}}{B_{bRoW_s}^{CHL}}
+\end{equation}
+
+Given the fact that the stock of $CLN$ can change value over time due to changes in the exchange rate, the $RoW$ economy experiences capital gains (losses) facing exchange rate appreciation (depreciation). Capital gains for $CHL$ sector works symmetrically. 
+
+\begin{equation}\label{eq:10}
+\tag{10}
+{CG}^{RoW}=(\Delta p_{cln})*CLN_s(-1)
+\end{equation}
+
+$RoW$ financial intermediaries are subject to the budget constraint, as depicted in the vertical column of our transaction flow matrix: liabilities of the financial sector are made of deposits and securitized assets ($CLN$) while assets are given by domestic and foreign bills as well as money. $RoW$ intermediaries’ profits are computed as the difference between their lagged interest payment inflows (on bills) and outflows (on Deposits and Derivatives), gross of any capital gains (losses) they benefit (bear) on foreign bills. These gains differ from those of the households since they are calculated on the change of the nominal exchange rate rather than on the price of the structured security.^[Still, as the exchange rate is effectively a price [@frenkel_exchange_2011], foreign bills are by all means subject to these gains (losses)]  Finally, interest rates on deposits moves in line with the returns on local bills.
+
+
+*RoW Financial sector*
+
+\begin{equation}\label{eq:11}
+\tag{11}
+B_{b_d}^{RoW}=D_{_s}^{RoW}-B_{bRoW_d}^{CHL}-H_{b_d}^{RoW}+P_{cln}\ast{CLN}_{_s}
+\end{equation}
+
+\begin{equation}\label{eq:12}
+\tag{12}
+H_{b_d}^{RoW}=\rho_0^{RoW}\ast D_{_s}^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:13}
+\tag{13}
+\Delta rd^{RoW}=\rho_2^{RoW}*\Delta r^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:14}
+\tag{14}
+{CG}_b^{RoW}=(\Delta xr^{CHL})*Bb_RoW_s(-1)^{CHL}
+\end{equation}
+
+\begin{equation}\label{eq:15}
+\tag{15}
+F_b^{RoW}=r_{\left(-1\right)}^{RoW}\ast{Bb}_{_d(-1)}^{RoW}-r_d^{RoW}\ast D_{_s(-1)}^{RoW}+r_{\left(-1\right)}^{CHL}\ast
+B_{bRoW_d(-1)}^{CHL}\ast{xr}^{CHL}\ +{CG}_b^{RoW}-{CLN}_{_s(-1)}
+\end{equation}
+
+
+Being our interests the response of the exchange rate to portfolio flows, the modeling of production by firms is left out the picture. Residual behavioral equations borrowed from @godley_monetary_2012. and augmented with the extra assets included in the present model. The [appendix 2][Appendix 2 - List of equations] shadows the structure proposed in @godley_monetary_2012 and @lavoie_behavioural_2011 to introduce the remaining equations of the model, namely: i) income and expenditure; ii) financial sector and portfolio equations; iii) asset supply and exchange rate closure.
+
+In the short run, the system reaches “equilibrium” through price adjustments in financial markets. However, such “equilibrium” is not a state of rest, since the expectations that drive expenditure and portfolio decisions may not be fulfilled, and/or the end-of-period level for at least one stock in the economy is not at its target level, so that such discrepancies influence decisions in the next period [@nikiforos2017stock]. We follow @godley_monetary_2012 and @lavoie_behavioural_2011 in considering the following variables as endogenous in the system:  import prices, export prices, domestic sales deflators, GDP deflators and the exchange rate, exports, imports, output, consumption, domestic sales and disposable income, taxes, interest payments, the supply of money, holdings of foreign and domestic bills, holding of derivatives, household wealth, and the government deficit and the government debt. 
+
+
+
+```{r, echo= F, include=FALSE}
+
+eqs <- sfcr_set(
+  #model creation,
+  #(1) arterial flows,
+  #income,
+  #yus~ cus+ gus +xus- imus,
+  #yla ~ cla+ gla+ xla -imla,
+  #disposable income,
+  ydus~(yus + fbus +rus[-1]*busus_d[-1]+ rdus[-1]*dus_d[-1] +cba_d[-1]+cgus)*(1-thetaus),
+  ydla~(yla + fbla + rla[-1]*blala_d[-1] + rdla[-1]*dla_d[-1]+der_d[-1]+cgla)*(1-thetala), 
+  #disposable income (hs),
+  #ydus_hs~ydus+ d(xrla)*busla_s[-1],
+  #ydla_hs~ydla+ d(xrus)*blaus_s[-1],
+  #wealth,
+  vus ~ vus[-1]+  ydus-cus,
+  vla ~ vla[-1]+ ydla-cla,
+  #capital gains,
+  cgus ~ (pcba-pcba[-1])*cba_s[-1],
+  cgla ~ (pder-pder[-1])*der_s[-1],
+  #tax,
+  tla ~ thetala*(yla+ fbla+rla[-1]*blala_d[-1]+ rdla[-1]*dla_d[-1]+der_d[-1]),
+  tus ~ thetaus*(yus+fbus +rus[-1]*busus_d[-1]+rdus[-1]*dus_d[-1] + cba_d[-1]) ,
+  #cb profits,
+  fcbla ~ rla[-1]*bcbla_d[-1] + rus[-1]*bcblaus_s[-1]*xrus,
+  fcbus ~ rus[-1]*bcbus_d[-1], 
+  #government budget constraint,
+  bla_s ~ bla_s[-1]+gla-tla+ rla[-1]*bla_s[-1] - fcbla, 
+  bus_s ~ bus_s[-1]+gus-tus+ rus[-1]*bus_s[-1] - fcbus,
+  #current and capital account,
+  cabla~xla - imla - rla[-1]*bbusla_s[-1] + rus[-1]*bblaus_s[-1]*xrus + rus[-1]*bcblaus_s[-1]*xrus ,
+  kabla ~ (bbusla_s-bbusla_s[-1]) - (bcblaus_s-bcblaus_s[-1])*xrus- (bblaus_s-bblaus_s[-1])*xrus,
+  cabus~xus - imus + rla[-1]*bbusla_s[-1]*xrla - rus[-1]*bblaus_s[-1] - rus[-1]*bcblaus_s[-1],
+  #kabus ~ -d(bbla_s)*xrla + d(blaus_s) + d(bcblaus_s),
+  #(2) trade,
+  #export and import,
+  pmla~ exp(mi_0la+  mi_1la *log(r_pusy)  + (1- mi_1la)*log(r_play) - mi_1la *log(xrla)),
+  pxla ~exp(chi_0la+  chi_1la *log(r_pusy)  + (1- chi_1la)*log(r_play)- chi_1la *log(xrla)),
+  pxus ~ pmla*xrla,  
+  pmus ~ pxla*xrla,
+  r_xla~ exp(e_la - eta_la *log(pmus/r_pusy) + epsilon_la*log(r_yus)),
+  r_imla ~ exp(p_la - psi_la *log(pmla[-1]/r_play[-1]) + pi_la*log(r_yla)),
+  r_xus  ~r_imla,
+  r_imus~r_xla,
+  xla ~ r_xla*pxla,
+  xus ~ r_xus*pxus,
+  imla ~ r_imla*pmla,  
+  imus ~ r_imus*pmus,
+  #(3) income and expenditure,
+  #real disposable income is of the haig-simon type,
+  r_vla ~ vla/r_pdsla, 
+  r_vus~ vus/r_pdsus,
+  r_ydla ~ ydla/r_pdsla - r_vla[-1]* (r_pdsla-r_pdsla[-1])/r_pdsla ,
+  r_ydus ~ ydus/r_pdsus - r_vus[-1]* (r_pdsus-r_pdsus[-1])/r_pdsus ,
+  r_cla ~ alpha_1la*r_ydlae + alpha_2la*r_vla[-1],
+  r_cus ~alpha_1us*r_yduse + alpha_2us*r_vus[-1],
+  r_ydlae~ (r_ydla + r_ydla[-1])/2,
+  r_yduse~ (r_ydus + r_ydus[-1])/2,
+  r_sla ~r_cla+r_gla+r_xla ,
+  r_sus ~r_cus+r_gus+r_xus ,
+  sla ~r_sla*r_plas,
+  sus ~r_sus*r_puss,
+  r_plas ~((1+phila)*(wla*nla+imla)) /r_sla,
+  r_puss ~((1+phius)*(wus*nus+imus)) / r_sus,
+  r_pdsla ~(sla-xla) / (r_sla-r_xla),
+  r_pdsus ~(sus-xus) / (r_sus-r_xus),
+  dsla ~sla-xla ,
+  dsus ~sus-xus ,
+  r_dsla ~r_cla+r_gla ,
+  r_dsus ~r_cus+r_gus  ,
+  yla~sla-imla,
+  yus ~sus-imus,
+  r_yla ~r_sla-r_imla ,
+  r_yus ~r_sus-r_imus ,
+  r_play ~ yla /r_yla ,
+  r_pusy ~yus/ r_yus,
+  cla ~r_cla*r_pdsla ,
+  cus ~r_cus*r_pdsus  ,
+  gla ~r_gla*r_pdsla ,
+  gus ~r_gus*r_pdsus ,
+  nla ~ r_yla/ r_prla , 
+  nus ~ r_yus/ r_prus ,
+  #(4) financial intermediaries,
+  #us financial sector,
+  bbus_d~dus_s-bbusla_d-hbus_d+pcba*cba_s,
+  #d(vbus)~fbus,
+  bbusla_d~rho_2us*cba_s,
+  hbus_d~rho_0us*dus_s,
+  rdus~ rdus[-1] + rho_1us*(rus-rus[-1]),
+  cgbus ~ (xrla-xrla[-1])*bbusla_s[-1],
+  pcba~(1/rcba)+log(pmus),
+  #d(rcba)~rho_0int*,
+  #d(rlus)~rho_2us*d(rus),
+  fbus~rus[-1]*bbus_d[-1]-rdus*dus_s[-1]+rla[-1]*bbusla_d[-1]*xrla +cgbus-cba_d[-1]-cgus,
+  #la financial sector,
+  bbla_d~dla_s-bblaus_d-hbla_d+pder*der_s,
+  #d(vbla)~fbla,
+  bblaus_d~rho_2la*der_s,
+  hbla_d~rho_0la*dla_s,
+  rdla ~ rdla[-1]+ rho_1la*(rla-rla[-1]),
+  cgbla ~ (xrus-xrus[-1])*bblaus_s[-1],
+  pder~1/rder,
+  #d(rder)~-rho_2int*(rla-rus),
+  #d(rlla)~rho_2la*d(rla),
+  fbla~rla[-1]*bbla_d[-1]-rdla*dla_s[-1]+rus[-1]*bblaus_d[-1]*xrus +cgbla-der_d[-1]-cgla,
+  #intermediaries,
+  #d(vint)~rus[-1]*bintus_d[-1]+rla[-1]*bintla_d[-1]*xrla +cgint-rcba[-1]*cba_d[-1],
+  #cba_s~cba_d,
+  #cgint~d(xrla)*bintla_s[-1],
+  #pcba~1/rcba,
+  #d(rcba)~rho_0int*d(pxla)-rho_1int*(rla-rus),
+  #fint~rus[-1]*bintus_d[-1]+rla[-1]*bintla_d[-1]*xrla +cgint-rcba[-1]*cba_d[-1],
+  #bintla_d~cba_s-bintus_d,
+  #(5) assets demand,
+  #asset demand for la resident,
+  blala_d~vla*(lambda_10la+lambda_11la*rla-lambda_13la*rdla-lambda_14la*(rder+dxrlae)),
+  dla_d~vla*(lambda_40la-lambda_41la*rla+lambda_43la*rdla-lambda_44la*(rder+dxrlae)),
+  der_d~(vla/pder)*(lambda_50la-lambda_51la*rla-lambda_53la*rdla+lambda_54la*(rder+dxrlae)),
+  #blaus_d~vla*(lambda_20la-lambda_21la*rla-lambda_23la*rdla+lambda_22la*(rus+dxruse)),
+  #hla_d/ vla~lambda_30la - lambda_31la*(rus+dxruse) -lambda_32la*rla,
+  #asset demand for us resident,
+  busus_d~vus*(lambda_10us +lambda_11us*rus-lambda_13us*rdus-lambda_14us*(rcba+dxruse)),
+  dus_d~vus*(lambda_40us-lambda_41us*rus+lambda_43us*rdus-lambda_44us*(rcba+dxruse)),
+  cba_d~(vus/pcba)*(lambda_50us-lambda_51us*rus-lambda_53us*rdus+lambda_54us*(rcba+dxruse)),
+  #busla_d~vus*(lambda_20us -lambda_21us*rus+lambda_22us*(rla+dxrlae)),
+  #hus_d/ vus~lambda_30us -lambda_31us*rus -lambda_32us* (rla+dxrlae),
+  #asset demand for intermediaries,
+  #bintus_d~vint*(lambda_10int + lambda_11int*rus - lambda_12int*(rla+dxrlae)),
+  #bintla_d~vint*(lambda_20int - lambda_21int*rus + lambda_22int*(rla+dxrlae)),
+  #expected change in the exchange rate (expectations to update),
+  dxrlae~d(pder)/ pder,
+  dxruse~d(pcba)/ pcba,
+  #(6) assets supply,
+  #demand for cash,
+  hus_d~ vus - busus_d- dus_d- pcba*cba_d ,
+  hla_d~ vla - blala_d-dla_d -pder*der_d,
+  #cb demand for b, h; d and cba,
+  hus_s~ hus_d,
+  hla_s~ hla_d,
+  dus_s~dus_d,
+  dla_s~dla_d,
+  busus_s~ busus_d,
+  blala_s ~blala_d,
+  cba_s~cba_d,
+  der_s~der_d,
+  bbus_s~ bbus_d,
+  bbla_s ~bbla_d,
+  #aus_s ~aus_d,
+  #ala_s ~ala_d,
+  #bintus_s~bintus_d,
+  #lus_s~lus_d,
+  #lla_s~lla_d,
+  hbus_s~hbus_d,
+  hbla_s~hbla_d,
+  #supply of domestic t bills to cb,
+  bcbus_s~ bcbus_d,
+  bcbla_s~ bcbla_d ,
+  bcbus_d ~ bcbus_d[-1]+ (hus_s-hus_s[-1])+(hbus_s-hbus_s[-1]),
+  bcbla_d ~ bcbla_d[-1]+ (hla_s-hla_s[-1])+(hbla_s-hbla_s[-1])-(bcblaus_s-bcblaus_s[-1])*xrus,
+  #supply of assets abroad ,
+  #busla_s~ bla_s- blala_s- bcbla_s,
+  #exchange rate,
+  #xrus~ blaus_d /blaus_s,
+  xrla~ 1/xrus,
+  bblaus_s~bblaus_d*xrla,
+  bcblaus_d~bcblaus_s*xrus,
+  xrus~ (bbusla_s)/(bbusla_d),
+  bbusla_s~ bla_s - blala_s- bcbla_s -  bbla_s,
+  #final equation (not possible to appear twice),
+  #blaus_s~ blaus_d /xrus,
+  rerla~(r_play/r_pusy)*(xrla),
+  rerus~1/rerla,
+  tbla~xla - imla,
+  tbus~xus - imus,
+  psbrla~d(bla_s),
+  psbrus~d(bus_s),
+  prbla~cabla+d(bla_s),
+  prbus~cabus+d(bus_s),
+  nwla~((vla)-(bla_s) +(bbla_d-dla_s+bblaus_d+hbla_d-pder*der_s)+(bcblaus_d+bcbla_d-hla_s)),
+  nwus~((vus)-(bus_s) +(bbus_d-dus_s+bbusla_d+hbus_d-pcba*cba_s)+(bcbus_d-hus_s)),
+  rsh_cla~r_cla/yla,
+  sh_cabla~cabla/yla,
+  sh_tbla~tbla/yla,
+  sh_govdef~-psbrla/yla,
+  sh_prbla~prbla/yla,
+  nip~rla[-1]*bla_s[-1]/yla,
+  govdeb~bla_s/yla,
+  sh_bbusla_s~bbusla_s/bla_s,
+  sh_cba~pcba*cba_d/r_vus,
+  totla~pxla/pmla
+)
+
+external <- sfcr_set(
+  alpha_1la ~ 0.9,
+  alpha_1us ~ 0.6,
+  alpha_2la ~ 0.053333276,
+  alpha_2us ~ 0.213326723889398,
+  #vertical and horizontal constraints respected
+  lambda_10la ~ 0.4,
+  lambda_11la ~ 0.5,
+  lambda_12la ~ 0.5,
+  lambda_13la~ 0.25,
+  lambda_14la~ 0.25,
+  lambda_20la ~ 0.3,
+  lambda_21la ~ 0.5,
+  lambda_22la ~ 0.5,
+  lambda_23la~ 0.5,
+  lambda_40la ~ 0.4,
+  lambda_41la ~ 0.25,
+  lambda_42la ~ 5,
+  lambda_43la~ 0.5,
+  lambda_44la~ 0.25,
+  lambda_50la ~ 0.1,
+  lambda_51la ~ 0.25,
+  lambda_52la ~ 5,
+  lambda_53la~ 0.25,
+  lambda_54la~ 0.5,
+  #vertical and horizontal constraints respected
+  lambda_24la~ 5,
+  lambda_30la ~ 0.25,
+  lambda_31la ~ 5,
+  lambda_32la ~ 5,
+  lambda_33la~ 5,
+  lambda_34la~ 5,
+  #vertical and horizontal constraints respected
+  lambda_10us ~ 0.4,
+  lambda_11us ~ 0.5,
+  lambda_12us ~ 0.5,
+  lambda_13us~ 0.25,
+  lambda_14us~ 0.25,
+  lambda_20us ~ 0.3,
+  lambda_21us ~ 0.5,
+  lambda_22us ~ 0.5,
+  lambda_23us~ 0.5,
+  lambda_40us ~ 0.4,
+  lambda_41us ~ 0.25,
+  lambda_42us ~ 5,
+  lambda_43us~ 0.5,
+  lambda_44us~ 0.25,
+  lambda_50us ~ 0.1,
+  lambda_51us ~ 0.25,
+  lambda_52us ~ 5,
+  lambda_53us~ 0.25,
+  lambda_54us~ 0.5,
+  #vertical and horizontal constraints respected
+  lambda_24us~ 5,
+  lambda_30us ~ 0.25,
+  lambda_31us ~ 5,
+  lambda_32us ~ 5,
+  lambda_33us~ 5,
+  lambda_34us~ 5,
+  #vertical and horizontal constraints respected
+  lambda_60us~0.5,
+  lambda_61us~0.5,
+  lambda_62us~0.5,
+  lambda_70us~0.5,
+  lambda_71us~0.5,
+  lambda_72us~0.5,
+  lambda_60la~0.5,
+  lambda_61la~0.5,
+  lambda_62la~0.5,
+  lambda_70la~0.5,
+  lambda_71la~0.5,
+  lambda_72la~0.5,
+  #vertical and horizontal constraints respected
+  e_la ~ - 1.18,
+  eta_la ~ 0.7,
+  epsilon_la ~ 0.8,
+  p_la ~ - 3.015,
+  psi_la ~ 0.7,
+  pi_la ~  1.2,
+  mi_0la ~ - 0.00001,
+  chi_0la ~ - 0.00001,
+  mi_1la ~ 0.7,
+  chi_1la ~ 0.2,
+  phila ~ 0.2381,
+  phius ~ 0.2381,
+  thetala ~ 0.2,
+  thetaus ~ 0.2,
+  thetabla ~ 0,
+  thetabus ~ 0,
+  rho_0us~0.03,
+  rho_1us~0.9,
+  rho_2us~2.7,
+  rho_0la~0.03,
+  rho_1la~0.9,
+  rho_2la~2.7,
+  rho_0int~0.9,
+  rho_1int~0.9,
+  rho_2int~0.9,
+  # exogenous variables
+  bcblaus_s ~ 0.02031,
+  r_gla ~ 16,
+  r_gus ~ 16,
+  r_prla ~ 1.3333,
+  r_prus ~ 1.3333,
+  rla ~ 0.03,
+  rus ~ 0.03,
+  rcba~0.16,
+  rder~0.16,
+  wla ~ 1,
+  wus ~ 1
+)
+
+
+
+initial <- sfcr_set(
+  # starting values for stocks
+  bcblaus_d ~ 0.02031,
+  bla_s ~ 145.954295,
+  blala_d ~ 102.18,
+  blala_s ~ 102.18,
+  bbus_d ~ 13.250255,
+  bbus_s ~ 13.250255,
+  bus_s ~ 146.005715,
+  busus_d ~ 102.19,
+  busus_s ~ 102.19,
+  bcbla_d ~ 17.27839,
+  bcbla_s ~ 17.27839,
+  bcbus_d ~ 17.2995,
+  bcbus_s ~ 17.2995,
+  hla_d ~ 7.2987,
+  hla_s ~ 7.2987,
+  hus_d ~ 7.2995,
+  hus_s ~ 7.2995,
+  bblaus_d ~ 13.24565,
+  bblaus_s ~ 13.24565,
+  bbusla_d ~ 13.250255,
+  bbusla_s ~ 13.250255,
+  cba_d ~ 3.9178,
+  cba_s ~ 3.9178,
+  der_d ~ 3.9178,
+  der_s ~ 3.9178,
+  bbla_d ~ 13.24565,
+  bbla_s ~ 13.24565,
+  hbus_d~10,
+  hbus_s~10,
+  hbla_d~10,
+  hbla_s~10,
+  dus_s~12.01426,
+  dla_s~12.01426,
+  dus_d~12.01426,
+  dla_d~12.01426,
+  r_vla ~ 152.62,
+  r_vus ~ 152.63,
+  vla ~ 145.97921,
+  vus ~ 145.99001,
+  # other endogenous
+  r_cla ~ 81.393,
+  r_cus ~ 81.401,
+  cabla ~ 0,
+  cabus ~ 0,
+  cla ~ 77.851,
+  cus ~ 77.86,
+  r_dsla ~ 97.393,
+  r_dsus ~ 97.401,
+  dsla ~ 93.154,
+  dsus ~ 93.164,
+  #dxrlae ~ 0,
+  fcbla ~ 0.00869,
+  fcbus ~ 0.00895,
+  fbus~0.6,
+  fbla~0.8,
+  gla ~ 15.304,
+  gus ~ 15.304,
+  r_imla ~ 11.928,
+  r_imus ~ 11.926,
+  imla ~ 11.407,
+  imus ~ 11.409,
+  kabla ~ 0.00002,
+  #kabus ~ - 0.00002,
+  nla ~ 73.046,
+  nus ~ 73.054,
+  r_pdsus ~ 0.95648,
+  r_pdsla ~ 0.95649,
+  pmla ~ 0.95628,
+  pmus ~ 0.95661,
+  r_plas ~ 0.95646,
+  r_puss ~ 0.9565,
+  pxla ~ 0.95634,
+  pxus ~ 0.95656,
+  r_play ~ 0.95648,
+  r_pusy ~ 0.95649,
+  r_sla ~ 109.32,
+  r_sus ~ 109.33,
+  sla ~ 104.56,
+  sus ~ 104.57,
+  tla ~ 19.463,
+  tus ~ 19.465,
+  r_xla ~ 11.926,
+  r_xus ~ 11.928,
+  xla ~ 11.406,
+  xus ~ 11.41,
+  xrla ~ 1.0003,
+  xrus ~ 0.99971,
+  #xrlae ~ 1.0003,
+  #xruse ~ 0.99971,
+  r_yla ~ 97.392,
+  r_yus ~ 97.403,
+  yla ~ 93.154,
+  yus ~ 93.164,
+  ydla ~ 77.851,
+  ydus ~ 77.86,
+  r_ydla ~ 81.394,
+  r_ydus ~ 81.402,
+  r_ydlae ~ 81.394,
+  r_yduse ~ 81.402,
+  rerus~0,
+  rerla~0,
+  rdus~0.01,
+  rdla~0.01,
+  pcba~ 6.25,
+  pder~ 6.25,
+  dxrlae~0,
+  dxruse~0,
+  tbla~0,
+  tbus~0,
+  psbrla~0,
+  psbrus~0,
+  prbla~0,
+  prbus~0,
+  nwla~0,
+  nwus~0,
+  rsh_cla~0,
+  sh_cabla~0,
+  sh_tbla~0,
+  sh_govdef~0,
+  sh_prbla~0,
+  nip~0,
+  govdeb~0,
+  sh_bbusla_s~0,
+  sh_cba~0,
+  totla~0
+)
+
+cba <- sfcr_baseline(
+  equations = eqs, 
+  external = external,
+  initial=initial,
+  periods = 150, 
+  
+)
+
+#cba
+
+shock1 <- sfcr_shock(
+  variables = sfcr_set(
+    e_la ~ - 1.08
+  ),
+  start = 50,
+  end = 60
+  
+)
+
+shock2 <- sfcr_shock(
+  variables = sfcr_set(
+    e_la ~ - 1.28
+  ),
+  start = 61,
+  end = 150
+  
+)
+
+cba2 <- sfcr_scenario(
+  baseline = cba,
+  scenario = list(shock1, shock2),
+  periods = 150
+)
+
+#cba2
+
+sfcr_dag_blocks(eqs)
+
+sfcr_dag_cycles(eqs)
+
+
+
+```
+
+```{r}
+
+
+# Balance-sheet matrix
+
+bs <- sfcr_matrix(
+  columns = c("Households CHL", "Firms CHL", "Financial Sector CHL", "Government CHL", "Central bank CHL", "FX", "Households RoW", "Firms RoW", "Financial Sector RoW", "Government RoW", "Central bank RoW", "sum"),
+  codes = c("hCHL", "fCHL", "bCHL", "gCHL", "cbCHL", "xr", "hRoW", "fRoW", "bRoW", "gRoW", "cbRoW", "s"),
+  r1 = c("Deposits", hCHL = "+D", bCHL = "-D", xr = "xr", hRoW = "+D", bRoW = "-D"),
+  r2 = c("Bills CHL", hCHL = "+B_hCHLCHL", bCHL = "+B_bCHLCHL", gCHL = "-B_CHL", cbCHL = "+B_cbCHL", xr = "xr", bRoW = "+B_hRoWCHL"),
+  r3 = c("Bills RoW", bCHL = "+B_bCHLRoW", cbCHL = "+B_cbCHLRoW", xr = "xr", hRoW = "+B_hRoWRoW", bRoW = "+B_bRoWRoW", gRoW = "-B_RoW", cbRoW = "+B_cbRoW"),
+  r4 = c("Derivatives", hCHL = "+pDER", bCHL = "-pDER", xr = "xr"),
+  r5 = c("CLNs", xr = "xr", hRoW = "+pCLN", bRoW = "-pCLN"),
+  r6 = c("HPM", hCHL = "+H_h", bCHL = "+H_b", cbCHL = "-H", xr = "xr", hRoW = "+H_h", bRoW = "+H_b", cbRoW = "-H"),
+  r7 = c("Balance", hCHL = "-V", bCHL = "0", gCHL = "-NW_g",  cbCHL = "-NW_cb", hRoW = "-V", bRoW = "0", gRoW = "-NW_g",  cbRoW = "-NW_cb")
+)
+
+
+# Transactions-flow matrix (with xr sankey not working, hence I excluded it)
+tfm <- sfcr_matrix(
+  columns = c("Households CHL", "Firms CHL", "Financial Sector CHL", "Government CHL", "Central bank CHL", "FX", "Households RoW", "Firms RoW", "Financial Sector RoW", "Government RoW", "Central bank RoW"),
+  codes = c("hCHL", "fCHL", "bCHL", "gCHL", "cbCHL", "xr", "hRoW", "fRoW", "bRoW", "gRoW", "cbRoW"),
+  c("Consumption", hCHL = "-cla", fCHL = "+cla", xr = "xr", hRoW = "-cus", fRoW = "+cus"),
+  c("Govt. Expenditures", fCHL = "+gla", gCHL = "-gla", xr = "xr", fRoW = "+gus", gRoW = "-gus"),
+  c("Exports", fCHL = "+xla", xr = "xr", fRoW = "-imus"),
+  c("Imports", fCHL = "-imla", xr = "xr", fRoW = "+xus"),
+  c("Taxes", fCHL = "-tla", gCHL = "+tla", xr = "xr", fRoW = "-tus", gRoW = "+tus"),
+  c("Income", hCHL = "+yla", fCHL = "-yla", xr = "xr", hRoW = "+yus", fRoW = "-yus"),
+  c("Banks Profits", hCHL = "+fbla", bCHL = "-fbla", xr = "xr", hRoW = "+fbus", bRoW = "-fbus"),
+  c("CB Profits", gCHL = "+fcbla", cbCHL = "-fcbla", xr = "xr", gRoW = "+fcbus", cbRoW = "-fcbus"),
+  c("Int. Deposits", hCHL = "+rdla[-1]*dla_d[-1]", bCHL = "-rdla[-1]*dla_d[-1]", xr = "xr", hRoW = "+rdus[-1]*dus_d[-1]", bRoW = "-rdus[-1]*dus_d[-1]"),
+  c("Int. Bills CHL", hCHL = "+rla[-1]*blala_d[-1]", bCHL = "+rla[-1]*bbla_d[-1]", gCHL = "-rla[-1]*bla_s[-1]", cbCHL = "+rla[-1]*bcbla_d[-1]", xr = "xr", bRoW = "+rla[-1]*bbusla_d[-1]"),
+  c("Int. Bills RoW", bCHL = "+rus[-1]*bblaus_d[-1]", cbCHL = "+rus[-1]*bcblaus_d[-1]", xr = "xr", hRoW = "+rus[-1]*busus_d[-1]", bRoW = "+rus[-1]*bbus_d[-1]", gRoW = "-rus[-1]*bus_s[-1]", cbRoW = "+rus[-1]*bcbus_d[-1]"),
+  c("Int. Derivatives", hCHL = "+rder[-1]*der_d[-1]", bCHL = "-rder[-1]*der_d[-1]"),
+  c("Int. CLNs", hRoW = "+rcba[-1]*cba_d[-1]", bRoW = "-rcba[-1]*cba_d[-1]"),
+  c("Ch. Deposits", hCHL = "-(dla_s-dla_s[-1])", bCHL = "+(dla_s-dla_s[-1])", xr = "xr", hRoW = "-(dus_s-dus_s[-1])", bRoW = "+(dus_s-dus_s[-1])"),
+  c("Ch. Bills CHL", hCHL = "-(blala_s-blala_s[-1])", bCHL = "-(bbla_s-bbla_s[-1])", gCHL = "+(bla_s-bla_s[-1])", cbCHL = "-(bcbla_s-bcbla_s[-1])", xr = "xr", bRoW = "-(bbusla_s-bbusla_s[-1])"),
+  c("Ch. Bills RoW", bCHL = "-(bblaus_s-bblaus_s[-1])", cbCHL = "-(bcblaus_s-bcblaus_s[-1])", xr = "xr", hRoW = "-(busus_s-busus_s[-1])", bRoW = "-(bbus_s-bbus_s[-1])", gRoW = "+(bus_s-bus_s[-1])", cbRoW = "-(bcbus_s-bcbus_s[-1])"),
+  c("Ch. Derivatives", hCHL = "-(pder*der_s-pder[-1]*der_s[-1])", bCHL = "+(pder*der_s-pder[-1]*der_s[-1])" ),
+  c("Ch. CLNs", hRoW = "-(pcba*cba_s-pcba[-1]*cba_s[-1])", bRoW = "+(pcba*cba_s-pcba[-1]*cba_s[-1])"),
+  c("Ch. HPM", hCHL = "-(hla_s-hla_s[-1])", bCHL = "-(hbla_s-hbla_s[-1])", cbCHL = "+(hla_s-hla_s[-1])+(hbla_s-hbla_s[-1])", xr = "xr", hRoW = "-(hus_s-hus_s[-1])", bRoW = "-(hbus_s-hbus_s[-1])", cbRoW = "+(hus_s-hus_s[-1])+(hbus_s-hbus_s[-1])"),
+)
+
+
+
+
+
+```
+
+
+## Model Calibration
+
+According to @carnevali2019stock model’s coefficients can be: (a) calibrated, based on stylized facts or rules of thumb; (b) estimated through standard econometric techniques; (c) fine-tuned in such a way to obtain a specific baseline scenario.
+
+We adopt (c), in which numerical values for the parameters are individuated, basing the choices on the observation of stylized facts. We borrowed most parameters from @godley_monetary_2012. However, we added one sector and two assets^[The second asset is called DER which reflects the securitization that Chilean banks may perform on $RoW$ bills. However, the price logic for this asset is not linked to commodity price, rather it only focuses on the international interest rate. We report the asset in the [appendix 2][Appendix 2 - List of equations]. ]  to the original version of the model; we fill the gap for missing parameters by looking at empirical research. Also, shocks imposed to the model are replicated using data from stylized facts. 
+
+We make different assumptions – also grounded on empirical works – for the following elements of the model: i) Marshall-Lerner (M-L) condition; ii) propensity to consume; iii) portfolio equations; iv) Singer-Prebisch hypothesis.
+
+  i) An important consideration for SFC concerns the relationship describing the dynamic between RER and trade flows. The fulfilment of the Marshall-Lerner (ML) condition implies a positive effect of RER depreciation on trade through. As a result, in the long run the model achieves a new steady-state equilibrium through the upward adjustment in exports favored by a competitive RER. The fulfillment of the ML condition in SFC models has been discussed in @godley_monetary_2012 and @carnevali2020assessing. However, the empirical evidence for Chile [@bernat2015tipo; @bussiere2020] points out for a relatively small real exchange rate pass-through on export prices, while the reverse holds true for import prices. Hence, we imposed them to be equal to 0.2 and 0.7, respectively^[It should be point out that the M-L condition is still verified with this setting, although to a weaker extent. In accordance with @carnevali2020assessing, three conditions for a trade balance improvement following a devaluation may be identified in a SFC framework: a) the original M-L condition, stating that the sum of the price elasticity of exports and imports must exceed unity ($\eta^{CHL}+\psi^{CHL}>1$); b) the implicit M-L condition provided by @godley_monetary_2012 ($\eta^{CHL}+\psi^{CHL}>\mu_1^{CHL}-\chi_1^{CHL}$); c) the general case, ($\eta^{CHL}\ast(1-\chi_1^{CHL})+\psi^{CHL}\ast\mu_1^{CHL}>\mu_1^{CHL}-\chi_1^{CHL}$). Since we have assigned the same values for the parameters $\eta^{CHL}$,\ $\psi^{CHL}$ than the original OPENFLEX model (0,7 for both), either a), b) and c) hold true, although b) to a slighter margin. In our sensitivity analysis in the [appendix][Appendix 6 - Sensitivity Analysis], we verify the consequences of dropping a), by assuming ($\eta^{CHL}+\psi^{CHL}=1$).] .
+
+  ii) Developed and developing countries are unlikely to show the same propensity to consume out of income [@funke_is_2004; @case2011wealth; @gross_marginal_2020] Marginal propensity to consume out of income appear to be higher in developing countries than in developed ones. For the former, it is around 0.6 [@funke_is_2004], while for the latter 0.9 [@case2011wealth]. 
+
+  iii) With respect to portfolio composition, we model the initial distribution following a generic allocation that allocates more resources to safer assets (deposits, and bills) and less to more risky securities (structured notes). We follow this logic and we arbitrary set up the exogenous parameters of the $RoW$ and $CHL$ residents demand for assets. That is, all other things being equal, households’ preferences designate 50 percent of their wealth to bank deposit, 40 percent in safe domestic securities, and the remaining 10 percent to riskier assets. 
+
+
+  iv) The pattern of specialization of Latin America (and particularly Chile) has gone back in the last decades to a commodity-exporter model. While the boom in commodity prices can be blamed for it, several authors [@ocampo_new_1986; @noauthor_terms_nodate; @erten_super_2013] have pointed out that a longer run tendency can be identified. The hypothesis of a heterogeneous and specialized Centre v/s homogeneous and diversified Periphery was first assessed by @singer_distribution_1950 and @prebisch_desarrollo_1949 observing the deteriorating trend of terms of trade of developing countries vis-a-vis Britain since late nineteenth century. We decided to add more realism to the simulation by imposing a modification on @godley_open_1999 and @godley_monetary_2012, by assuming away the similarities in the income elasticity of export and import and by setting them to 0.8 and 1.2, respectively.
+
+
+# Scenario Analysis
+
+The aim of this section is to run a simulation for 150 periods (years) where commodity export prices experience an initial positive shock after period 50, followed by a drop ten years later. A small, peripheral, commodity-export economy, such as Chile, is considered price taker with no power to influence commodity price^[The model has been built using the package 'sfcr' provided by @macalos_simulate_nodate. The code is available under request. The equations used to build the figures can be found in the [appendix 2][Additional equation for figures]. Notice that in our model export prices in the $CHL$ countries are not strictly exogenous, as in a two-country SFC model they will be determined by equation (\ref{eq:2}). This is true as long as the absolute value of $\chi_1^{CHL}$  exceeds zero, otherwise export prices will be determined by the same local factors influencing  $p_y^{CHL}$.] . Thus, we impose a positive shock in the exogenous component of exports. This is replicated by increasing the parameter $\epsilon^{CHL}$\ in equation (\ref{eq:4})^[It would have been also possible to introduce the shock directly to the exogenous component of export prices, $\chi_0^{CHL}$. However, this would have implied to identify the causes of the commodity boom with a pure price shock. This is both misleading from the point of view of the stylized facts and from the sake of our simulation. While there is a wide consensus that the upward trend in commodities prices was influenced by the increase in demand for raw materials, in particular by China [@abeles2018estudios], a price shock in the context of a demand-led models such as the SFC would have been short-lived given the assumption of adaptive expectations for the real disposable income (see [appendix][Appendix 2 - List of equations]). Notice that through this device, the shock is channeled directly through the exchange rate which appreciates and thus increases (equation \ref{eq:2}) and indirectly through the income and expenditure mechanism which, given the exogenous increase of sales (eq \ref{eq:24}-\ref{eq:35}) and the constancy of both nominal wage and the mark-up determine an increase in sales prices via the labour demand channel (eq \ref{eq:18}-\ref{eq:19}, \ref{eq:46}-\ref{eq:47}).] .  To find the correct value for the percentage change in the autonomous demand for exports, we looked at data for the volume of exports of copper available in the Central Bank’s database. We consider the variation in the autonomous demand as a long run change. We use the 5-year moving average of the series as a proxy for this value. We then calculate the percentage difference in December 2015 from one year later, which results in 9 percent change in the long run (autonomous) demand for export and translates into a change from -1.18 to -1.08 in the parameter of $\epsilon^{CHL}$. To simulate the terms of trade reversal in the second shock, we impose an (asymmetric) change from -1.08 to -1.28. This has important results on the outcome of the simulation and in the steady state values of the series, as it will be shown in the next session. Nonetheless, they represent a good approximation of the commodity boom and bust cycle that took place in the last decade. An alternative scenario will be display in the [appendix][Appendix 6 - Sensitivity Analysis], whereby the autonomous demand of exports returns instead to its pre-shock level. 
+
+
+Figure \ref{fig:fig3} reports estimations for RER which is calculated as the nominal exchange rate multiplied the ratio between foreign and domestic prices. Being the model composed of only two countries, it goes alone that we are referring to the real bilateral exchange rate. We remind the reader that simulation is carried over with fictional values. Hence, rather than interpreting the magnitude of the change, we focus on the direction of the response compared to a baseline scenario. That is, scenario analysis does not quantitively forecast reaction from macro variables, but rather the direction of their response to shocks. 
+
+Simulations show that the behavior of RER follows two elements, namely, terms of trade and gross financial inflows, suggesting the coexistence of real [@clark1999exchange] and financial [@harvey_currencies_2009] determinants of RER. 
+
+
+```{r fig3, fig.cap="\\label{fig:fig3}Results from the simulation. Source: own elaboration.", echo=FALSE, results='asis', fig.align='center'}
+p1 <- cba2 %>%
+  ggplot( aes(x=period, y=r_yla)) +
+  geom_line(aes(colour="CHL real output")) +
+  theme(axis.title.x=element_blank())+
+  theme(axis.title.y=element_blank()) +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())
+p2 <- cba2 %>%
+  ggplot( aes(x=period, y=rsh_cla)) +
+  geom_line(aes(colour="CHL consumption % GDP")) +
+  theme(axis.title.x=element_blank())+
+  theme(axis.title.y=element_blank()) +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)
+p3 <- cba2 %>%
+  ggplot( aes(x=period, y=sh_cabla)) +
+  geom_line( aes(color="CA % GDP"))+
+  geom_line(aes(x=period, y=sh_tbla, color="TA % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  theme(axis.title.y=element_blank()) +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))
+p4 <- cba2 %>%
+  ggplot( aes(x=period, y=sh_cabla)) +
+  geom_line(aes(color="CA % GDP")) +
+  geom_line(aes(x=period, y=sh_govdef, color="GB % GDP")) +
+  geom_line(aes(x=period, y=sh_prbla, color="PB % GDP")) +
+  theme(axis.title.x=element_blank())+
+  theme(axis.title.y=element_blank()) +
+  scale_color_manual(values =c("blue", "red", "green") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))
+
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+
+
+```
+
+```{r fig4, fig.cap="\\label{fig:fig4}Results from the simulation. Source: own elaboration.", echo=FALSE, results='asis', fig.align='center'}
+p5 <- cba2 %>%
+  ggplot( aes(x=period, y = rerla)) +
+  geom_line(aes(color="RER CHL")) +
+  geom_line(aes(y = pxla/pmla, color="TOT CHL"))  +
+  theme(axis.title.x=element_blank())+
+  theme(axis.title.y=element_blank()) +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))
+p6 <- cba2 %>%
+  ggplot( aes(x=period, y=cgus)) +
+  geom_line(aes(color="Capital gains on CLNs")) +
+  geom_line(aes(x=period, y=cgbus, color="Capital gains on CHL bills"))   +
+  theme(axis.title.x=element_blank())+
+  theme(axis.title.y=element_blank()) +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))
+p7 <- cba2 %>%
+  ggplot( aes(x=period, y=pcba)) +
+  geom_line(aes(color="Price of CLNs"))  +
+  theme(axis.title.x=element_blank())+
+  theme(axis.title.y=element_blank()) +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank()) 
+p8 <- cba2 %>%
+  ggplot( aes(x=period, y=nip)) +
+  geom_line(aes(color="Interest payment on CHL debt % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  theme(axis.title.y=element_blank()) +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) 
+
+grid.arrange(p5, p6, p7, p8, nrow = 2)
+
+
+
+
+
+```
+
+```{r fig5, fig.cap="\\label{fig:fig5}Results from the simulation. Source: own elaboration.", echo=FALSE, results='asis', fig.align='center'}
+p9 <- cba2 %>%
+  ggplot( aes(x=period, y = govdeb)) +
+  geom_bar(stat = "identity", aes(color="Government Debt")) +
+  coord_cartesian(ylim=c(1.53,1.60)) +
+  theme(axis.title.x=element_blank())+
+  theme(axis.title.y=element_blank()) +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) 
+p10 <- cba2 %>%
+  ggplot( aes(x=period, y=nwla)) +
+  #geom_bar(aes(x=period, y=nwus)) +
+  geom_bar(stat = "identity", aes(color="Neth Wealth CHL")) +
+  theme(axis.title.x=element_blank())+
+  theme(axis.title.y=element_blank()) +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())
+p11 <- cba2 %>%
+  ggplot( aes(x=period, y=sh_bbusla_s)) +
+  geom_bar(stat = "identity", aes(color="External to Total Gov. Debt")) +
+  coord_cartesian(ylim=c(0.06,0.092)) +
+  theme(axis.title.x=element_blank())+
+  theme(axis.title.y=element_blank()) +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) 
+p12 <- cba2 %>%
+  ggplot( aes(x=period, y=sh_cba)) +
+  geom_bar(stat = "identity", aes(color="Share of CLN in RoW wealth")) +
+  coord_cartesian(ylim=c(0.150,0.162))+
+  theme(axis.title.x=element_blank())+
+  theme(axis.title.y=element_blank()) +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) 
+
+grid.arrange(p9, p10, p11, p12, nrow = 2)
+
+#grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, nrow = 3)
+ 
+#cba2 %>%
+  #ggplot( aes(x=period, y=bus_s)) +
+  #geom_line() +
+  #geom_point()  
+
+```
+
+
+## Terms of trade improvement
+
+As shown in figure \ref{fig:fig4}, terms of trade improved after the increase in the exogenous component of the demand for exports. The change in the price of $CLNs$ through the exogenous component of equation \ref{eq:2}, generates portfolio adjustments to new higher price of $CLNs$. Indeed, $RoW$ households want to hold more $CLNs$ as they represent the security of a country, $CHL$ which is facing an economic expansion phase. To supply a greater number of $CLNs$ and meet higher demand from domestic households, $RoW$ financial intermediaries increase the demand for foreign bills – reducing their demand for domestic bills and deposits. A proportion of the new $CHL$ bills held by financial households are securitized and offered to the $RoW$ households. This also generates capital gains on both the $CLN$ and Chilean bills, as it appears in figure \ref{fig:fig4}.
+
+
+Figure \ref{fig:fig4} shows RER appreciated steadily throughout the ten year following the shock, starting from a steady state and reaching 1.3 at its peak. It remains appreciated for the next 4 years before the fall in commodity prices. The initial currency appreciation has a consequent impact on trade flows (figure \ref{fig:fig3}), specifically on the value and volume of exports and imports. The graph shows an initial spike in the trade balance and, in turn, in the current account. In the short run, $RoW$ imports do not adjust to the new higher $CHL$ export prices, as a result the current value of exports increases due to a positive revaluation of the current exports. Eventually, given the low sensitivity of Chilean export prices to the RER [@bernat2015tipo; @bussiere2020], foreign demand adjusts to new higher prices in the following periods, and volume reduces consequently, as shown in the decrease from the initial spike. 
+
+In addition, the government budget constraint relaxes as the economy experiences growth (figure \ref{fig:fig3}). During the expansionary phase, income is increasing. Also, expectations - calculated as the average income received in the last two periods - improve. Higher income and expectations consent to the economy to enjoy a higher level of consumption. Ultimately, tax revenues are higher as well. 
+
+There are also positive implications for the country’s balance sheet due to the decrease in the value of stock from the liabilities expressed in the foreign currency. Looking at the debt-to-GDP ratio (figure \ref{fig:fig5}), the latter results to be lower when the currency is appreciating .^[As a matter of fact, in a small open economy the expansionary phase brings forth an increase in indebtedness, resulting not only from long-term purchase of sovereign debt such in our model, but also from short-term transactions in form of portfolio transactions or in non-conventional carry trade operations involving for instance a local company and its cross-border parent which can issue debt in foreign currency. Such practices have been widely used during the commodity bonanza of the last decade, especially in Brazil [@kaltenbrunner2018] and they have led to an overall increase of external indebtedness which have largely outweighed the pace of debt repayment. Similarly, our model does not explicitly treat Foreign Direct Investment (FDI) flows, which may also contribute at destabilizing the exchange rate and create a spiral of increasing external indebtedness and higher foreign currency outlays in form of interest payments, as shown by @botta2016finance]  Notice, however, that the decrease in the ratio is only in nominal terms. That is, the currency stock of debt increases due to higher demand from foreign investors – an element that will cause problems as soon as the currency depreciates. 
+
+Lower debt and higher income generate a positive effect of wealth. Indeed, net wealth increases during this phase, as displayed in figure \ref{fig:fig5}. Expectations improve too, generating, together with higher stock of wealth, an increase in the share of consumption on GDP (figure \ref{fig:fig3}). Since the $CHL$ economy has a greater amount of wealth to allocate, a higher appetite in the private sector is generated by financial assets. In this phase the net accumulation of financial assets (NAFA) of the private sector is positive, as reported in figure \ref{fig:fig3}. 
+
+
+## Fall in the terms of trade
+
+In the period 61 we impose a new shock on the model by introducing the fall in the exogenous parameter ($\epsilon^{CHL}$) in demand for $CHL$ exports, this time from 1.08 to 1.28. As a result, terms on trade overshoot their initial value. 
+
+This implies a negative shock in $CLNs$ prices and portfolio adjustments of $RoW$ financial sector towards safer securities, such as $RoW$ domestic bills and deposits, as displayed in figure \ref{fig:fig5}. The adjustment in the demand for $CHL$ bills from foreign investors generates RER depreciation from 1.29 to 0.80 as well as capital losses on both the $CLNs$ and the Chilean bills (figure \ref{fig:fig4}). Notice that the long-run equilibrium reached by RER after the shock is 20 percent lower than the initial equilibrium at 1. This is an important implication of the model. Commodity boom prices with portfolio adjustments can have long lasting effects on the trajectory of the exchange rate. The overall effect of depreciation is a hysteresis, that is, a permanent change in the series. Our results are in line with @duwicquet2018, who studied how the exchange rate behaves in face of shocks and conclude that it does not converge to the long run fundamental.   
+
+Result emphasize how boom-bust financial cycles could end in a situation in which the foreign financial sector has less preference to hold domestic securities, in turn, RER does not reverse to its initial level. The effect of a shift in international investors’ preference for $CHL$ securities is observed in gross financial outflow from $CHL$ economy. This phenomenon follows the idea of @dornbusch_expectations_1976 and @perri2004exchange about the importance of overshooting – that is, the selloff of $CHL$ domestic securities after currency start to depreciate, which brings further downward pressure on the exchange rate.
+
+ 
+
+After currency depreciation, we observe corrections also in the trade balance, as it falls from 0.5 to -2.5 percentage point due to lower level in the value of its exports. However, in the long run, the competitiveness of the currency slumps a recovery in exports, as they grow steadily in the long run.  
+
+In line with the hypothesis of the work, while the external sector benefits in the long-run, other sectors do not, and stabilize at lower steady-state equilibrium levels – that is, they show long lasting imbalances in macroeconomic ratios. This is true for the consumption share, which falls at 86% of GDP.  
+
+Shortly after the drop in TOT, government revenues decrease and primary (secondary) fiscal deficit increase (-0.5%). As the government finances it by issuing new bills and increasing debt-to-GDP ratio, the latter peeks 160% from 154% before the shock.
+
+Currency depreciation increases the value of $CHL$ stock of bills issued in foreign currency (figure \ref{fig:fig5}). This is a negative effect for the balance sheet of the country [@krugman_balance_1999], as it decreases the net stock of wealth, while increasing service on debt issued (figure \ref{fig:fig4}). Together they produce higher negative outflows for the government. The deficit is only marginally alleviated from higher benefit received from the central bank, as the latter experiences capital gains on the bills held as international reserve.
+
+Moreover, while in the new steady-state the trade balance does return to the first equilibrium level, the current account balance does not. This is the result of two factors, namely the negative the accumulation of financial asset of the private sector and higher payments to foreign debt. 
+
+Ultimately, as consumption adjusts downward due to decreasing expectations, the wealth of households falls, too. Notice that, in general, households have a target level of wealth they want to maintain [@brainard1968pitfalls; @tobin_general_1969; @tobin_money_1982]. As a result, they reduce their consumption and increase their saving to fill the gap created by devaluation. 
+
+The effect on the former could be described as the *financial redistribution* effect from domestic to the foreign sector, as it is clearly shown by figure \ref{fig:fig5}. The $CHL$ economy ends up with lower value in stock of financial assets, thus reducing the possibility to increase their disposable income by increasing financial benefits from investment, while the $RoW$ economy experience the opposite effect, as it receives inflows and revaluation of financial assets.
+
+To validate the theoretical implication of the model, we compare our theoretical results with real life data. Moreover, we compared the auto and cross-correlation of the simulated and observed series for consumption and GDP (figure \ref{fig:fig8}). We remind the reader again, that we should not be looking the model successfully predicts the magnitude of the change in a specific variable, but rather if it is accurate the prediction if the response to specific macro-financial events (shocks). Table \ref{tab:tab3} and \ref{tab:tab4} provides a summary of results and their comparison with real life data.
+
+
+# Conclusions
+
+The aim of our work was to show how the presence of global, financial intermediaries shapes exchange rates and balance of payments in open economies dependent on commodities such as the one of Chile. To capture the various channels through which these influences could manifest, we adopt a Stock-Flow Consistent framework, building a two-economy model closely resembling the $OPENFLEX$ model presented in Chapter 12 of @godley_monetary_2012. 
+
+Our main innovation has been to include explicitly a simplified financial sector in both economies: both economies are internationally financial integrated, but present asymmetrical financial sophistication in their derivative markets. We introduced two securitized assets (Commodity-Linked Notes in $CHL$), issued by the international financial sector and backed by foreign bills, and we included them in the portfolio choice equation of households. The assumptions behind the definition of these assets were meant to capture the process of securitization carried out by transnational banks and investment funds on both commodities and liabilities of resource-dependent countries. In this sense, the intermediaries here represented are solely focused on “originate-to-distribute” kind of operations, rather than the standard “originate-to-hold” ones. Finally, we simulated a scenario closely resembling the commodity boom (and bust) cycle that unfolded between 2003 and 2014 – a rise in export prices that abruptly comes to an end coupled with the shifts in monetary policy by the US. The main results for our paper are the following: 1) unfettered financial markets such as the ones depicted in our models lead our small world system to react more promptly when hit by shocks, both in terms of deviation from and convergence towards the long run steady state. Nevertheless, when compared with the OPENFLEX simulations, the external balances end up in a lower position, and remarkably the current account scores a deficit position, due to the increased interest payment on the foreign owned debt; 2) nominal exchange rates, as well as terms of trade, follows a “J” dynamic: they first appreciate (depreciate) and then they slowly depreciate (appreciate), stabilizing at a new – and more devalued (overvalued) – level than the baseline; 3) Although nominal and real output settle to higher steady state values with respect the baseline due to a permanently undervalued exchange rate, household wealth and consumption tend to be permanently lower than before, even in presence of an increased debt/GDP ratio. This implies on one hand a transfer of wealth taking place from the commodity-led country toward the financial center and on the other a major reliance upon export performance. Our main results are in line with both the structuralist literature on export specialization and terms of trade deterioration in the long run [@prebisch_desarrollo_1949; @noauthor_estructuralismo_nodate; @ocampo_growth_2009], as well as the post-Keynesian literature concerning the study of the exchange rate and its financial determinants [@harvey_exchange_2001; @harvey_currencies_2009]. Nevertheless, the result that relates a more depreciated long run real exchange rate with a higher level of GDP should not be a) generalized to all developing countries and in particular Latin American ones and b) ascribed entirely to the Structuralist tradition. While the empirical evidence on this point remains controversial [@ribeiro2020does], the structuralist position contend that this relationship may be changing over time as it depends on the pattern of specialization of the economy (for a recent review of ongoing debate on this topic see @medeiros_structuralist_2020). From a development policy perspective, the stability of the currency is a crucial element for a small, peripheral country. Thus, in order to minimize exchange rate volatility foreign exchange interventions by the Central Bank are necessary but not sufficient tools and should be coupled with stricter regulations on cross-border financial flows and actors [@ffrench2018reformas; @gallagher_financialization_2014]. In the long-run, industrial policies should aim at elevating the technological content of exports [@cimoli_technology_2014], to reduce the dependency on the external fluctuations of commodity markets. 
+
+
+\newpage
+# List of References {-}
+
+::: {#refs}
+:::
+
+\newpage
+# Appendix 1 - Balance Sheet and Transaction-Flows Matrix {-}
+
+
+
+```{r}
+kbl(bs, caption = "Balance Sheet Matrix", booktabs = T, label = "1") %>%
+  kable_styling(latex_options="scale_down") %>%
+  add_footnote("Source: own elaboration.") %>% 
+  landscape()
+
+kbl(tfm, caption = "Transaction Flow Matrix", booktabs = T, label = "2") %>%
+  kable_styling(latex_options="scale_down") %>%
+  add_footnote("Source: own elaboration.") %>% 
+  landscape()
+
+
+```
+
+```{r}
+# Block and cycles
+
+#sfcr_dag_blocks_plot(eqs, title = NULL, size = 10)
+
+
+#sfcr_dag_cycles_plot(eqs, title = NULL, size = 10)
+
+#sfcr_sankey(tfm, cba, when = "start")
+
+
+```
+
+\newpage
+# Appendix 2 - List of equations {-}
+
+## Income and Expenditure {-}
+
+Real and nominal values are in lower and upper case, respectively, while the superscripts depict the nationality. Equations (\ref{eq:48}-\ref{eq:49}) describe Haig Simmons disposable income, obtained from the first column of the transaction flows matrix and calculated as total income plus capital gains, plus returns on financial assets. Differently from @godley_monetary_2012, the equation is enlarged with new assets, $CLNs$ and Derivatives. Wealth accumulation depends on end-of-period savings. Savings are the part of income not consumed  and contribute to increase (or decrease) the stock of wealth at the end of each period (\ref{eq:50}-\ref{eq:51}). Households pay taxes to the government on their regular income (\ref{eq:52}-\ref{eq:53}). They imply a fixed tax rate, which is exogenously set by the government. Notice that the government in this case does not tax capital gains. When government expenditures exceed revenues – that is, when there is a primary budget deficit – it issues more domestic bills (\ref{eq:54}-\ref{eq:55}). As we saw in row 9-10 of the transaction-flows matrix, the stock of debt issued by the government generates outflows due to interest payments to the sectors that holds bills, namely, households, foreign sector, and domestic central banks. Real consumption (\ref{eq:21}-\ref{eq:22}) depends both on lagged real wealth (\ref{eq:16}-\ref{eq:17}) and real expected disposable income (\ref{eq:18}-\ref{eq:19}), which is assumed to be a simple average based on the past value of (\ref{eq:22}-\ref{eq:23}). Real sales (\ref{eq:24}-\ref{eq:25}) are the sum of the domestic sales, which in turn are composed of household and government consumption (\ref{eq:32}-\ref{eq:33}), plus real exports. Prices are set with a mark-up over unit costs, according to equation (\ref{eq:28}-\ref{eq:29}), which includes the wage bill and imports demand – which are critical to compound for a small open economy. Therefore, the domestic output (both real and nominal) is defined as sales minus imports (\ref{eq:36}-\ref{eq:37}), with the GDP deflator being simply the ratio between nominal and real output (\ref{eq:40}-\ref{eq:41}). Finally, employment is the inverse of labor productivity (\ref{eq:46}-\ref{eq:47}), which in this model is set exogenously. Finally, for convenience the identities representing the current and financial account in both economies are reported (\ref{eq:56}-\ref{eq:59}).
+
+*Basic Accounting Identities in an Open Economy*
+
+\begin{equation}\label{eq:16}
+\tag{16}
+v^{CHL}\ =\frac{{\ V}^{CHL}}{p_{ds}^{CHL}}
+\end{equation}
+
+\begin{equation}\label{eq:17}
+\tag{17}
+v^{RoW}=\frac{V^{RoW}}{p_{ds}^{RoW}}
+\end{equation}
+
+\begin{equation}\label{eq:18}
+\tag{18}
+{yd}^{CHL}\ =\frac{{YD}^{CHL}}{p_{ds}^{CHL}}\ -\ v_{\left(-1\right)}^{CHL}\ast\frac{{\Delta p}_{ds}^{CHL}}{p_{ds}^{CHL}}
+\end{equation}
+
+\begin{equation}\label{eq:19}
+\tag{19}
+{yd}^{RoW}\ =\frac{{YD}^{RoW}}{p_{ds}^{RoW}}\ -\ v_{\left(-1\right)}^{RoW}\ast\frac{{\Delta p}_{ds}^{RoW}}{p_{ds}^{RoW}}
+\end{equation}
+
+\begin{equation}\label{eq:20}
+\tag{20}
+c^{CHL}\ =\ \alpha_1^{CHL}\ast{yd}_e^{CHL}+\ \alpha_2^{CHL}\ast v_{(-1)}^{CHL}
+\end{equation}
+
+\begin{equation}\label{eq:21}
+\tag{21}
+c^{RoW}\ =\ \alpha_1^{RoW}\ast{yd}_e^{RoW}+\ \alpha_2^{RoW}\ast v_{(-1)}^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:22}
+\tag{22}
+{yd}_e^{CHL}=\frac{{yd}^{CHL}\ +\ {yd}_{\left(-1\right)}^{CHL}}{2}
+\end{equation}
+
+\begin{equation}\label{eq:23}
+\tag{23}
+{yd}_e^{RoW}=\frac{{yd}^{RoW}\ +\ {yd}_{\left(-1\right)}^{RoW}}{2}
+\end{equation}
+
+\begin{equation}\label{eq:24}
+\tag{24}
+{s\ }^{CHL}=c^{CHL}+g^{CHL}+x^{CHL}
+\end{equation}
+
+\begin{equation}\label{eq:25}
+\tag{25}
+{s\ }^{RoW}=c^{RoW}+g^{RoW}+x^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:26}
+\tag{26}
+S^{CHL}\ ={s\ }^{CHL}\ast p_s^{CHL}
+\end{equation}
+
+\begin{equation}\label{eq:27}
+\tag{27}
+S^{RoW}\ ={s\ }^{RoW}\ast p_s^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:28}
+\tag{28}
+p_s^{CHL}=\frac{\left(1+\varphi^{CHL}\right)\ast\left(W^{CHL}\ast N^{CHL}+{IM}^{CHL}\right)}{s^{CHL}}
+\end{equation}
+
+\begin{equation}\label{eq:29}
+\tag{29}
+p_s^{RoW}=\frac{\left(1+\varphi^{RoW}\right)\ast\left(W^{RoW}\ast N^{RoW}+{IM}^{RoW}\right)}{s^{RoW}}
+\end{equation}
+
+\begin{equation}\label{eq:30}
+\tag{30}
+p_{ds}^{CHL}\ \ =\frac{\left(S^{CHL}-X^{CHL}\right)}{\left({s\ }^{CHL}-x^{CHL}\right)}
+\end{equation}
+
+\begin{equation}\label{eq:31}
+\tag{31}
+p_{ds}^{RoW}\ =\frac{\left(S^{RoW}-X^{RoW}\right)}{\left({s\ }^{RoW}-x^{RoW}\right)}
+\end{equation}
+
+\begin{equation}\label{eq:32}
+\tag{32}
+{DS}^{CHL}\ =S^{CHL}-X^{CHL}
+\end{equation}
+
+\begin{equation}\label{eq:33}
+\tag{33}
+{DS}^{RoW}\ =S^{RoW}-X^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:34}
+\tag{34}
+{ds}^{CHL}\ =c^{CHL}+g^{CHL}
+\end{equation}
+
+\begin{equation}\label{eq:35}
+\tag{35}
+{ds}^{RoW}\ =c^{RoW}+g^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:36}
+\tag{36}
+Y^{CHL}=S^{CHL}-{IM}^{CHL}
+\end{equation}
+
+\begin{equation}\label{eq:37}
+\tag{37}
+Y^{RoW}=S^{RoW}-{IM}^{RoW}
+\end{equation}
+
+
+\begin{equation}\label{eq:38}
+\tag{38}
+y^{CHL}\ ={s\ }^{CHL}-m^{CHL}
+\end{equation}
+
+\begin{equation}\label{eq:39}
+\tag{39}
+y^{RoW}\ ={s\ }^{RoW}-m^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:40}
+\tag{40}
+p_y^{CHL}\ =\ \frac{Y^{CHL}}{y^{CHL}}
+\end{equation}
+
+\begin{equation}\label{eq:41}
+\tag{41}
+p_y^{RoW}=\frac{Y^{RoW}}{y^{RoW}}
+\end{equation}
+
+\begin{equation}\label{eq:42}
+\tag{42}
+C^{CHL}\ =c^{CHL}\ast p_{ds}^{CHL}
+\end{equation}
+
+\begin{equation}\label{eq:43}
+\tag{43}
+C^{RoW}\ =c^{RoW}\ast p_{ds}^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:44}
+\tag{44}
+G^{CHL}\ =g^{CHL}\ast p_{ds}^{CHL}
+\end{equation}
+
+\begin{equation}\label{eq:45}
+\tag{45}
+G^{RoW}\ =g^{RoW}\ast p_{ds}^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:46}
+\tag{46}
+N^{CHL}\ =\frac{y^{CHL}}{{pr}^{CHL}}
+\end{equation}
+
+\begin{equation}\label{eq:47}
+\tag{47}
+N^{RoW}\ =\frac{y^{RoW}}{{pr}^{RoW}}
+\end{equation}
+
+*Disposable income*
+
+\begin{equation}\label{eq:48}
+\tag{48}
+{YD}^{RoW}=(Y^{RoW}\ +\ {Fb}^{RoW}\ +r_{(-1)}^{RoW}\ast B_{RoW_d(-1)}^{RoW}+\ {rd}_{(-1)}^{RoW}\ast D_{_d(-1)}^{RoW}\ +{CLN}_{_d(-1)}+{CG}^{RoW})\ast(1-\theta^{RoW})
+\end{equation}
+	
+\begin{equation}\label{eq:49}
+\tag{49}
+{YD}^{CHL}=(Y^{CHL}\ +\ {Fb}^{CHL}\ +r_{(-1)}^{CHL}\ast B_{LA_d(-1)}^{CHL}+\ {rd}_{(-1)}^{CHL}\ast D_{_d(-1)}^{CHL}\ +{DER}_{_d(-1)}+{CG}^{CHL})\ast(1-\theta^{CHL})
+\end{equation}
+
+*Wealth*
+
+\begin{equation}\label{eq:50}
+\tag{50}
+\Delta V^{RoW}=YD^{RoW}-C^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:51}
+\tag{51}
+\Delta V^{CHL}=YD^{CHL}-C^{CHL}
+\end{equation}
+
+
+
+*Taxes*
+
+\begin{equation}\label{eq:52}
+\tag{52}
+T^{RoW}=(Y^{RoW}\ +\ {Fb}^{RoW}\ +r_{(-1)}^{RoW}\ast B_{RoW_d(-1)}^{RoW}+\ {rd}_{(-1)}^{RoW}\ast D_{_d(-1)}^{RoW}\ +{CLN}_{_d(-1)})\ast(\theta^{RoW})
+\end{equation}
+
+\begin{equation}\label{eq:53}
+\tag{53}
+T^{CHL}=(Y^{CHL}\ +\ {Fb}^{CHL}\ +r_{(-1)}^{CHL}\ast B_{LA_d(-1)}^{CHL}+\ {rd}_{(-1)}^{CHL}\ast D_{_d(-1)}^{CHL}\ +{DER}_{_d(-1)})\ast(\theta^{CHL})
+\end{equation}
+
+
+*Government budget constraint*
+
+\begin{equation}\label{eq:54}
+\tag{54}
+(\Delta B_s^{RoW}) = G^{RoW}-T^{RoW}+ r(-1)^{RoW}*B_s(-1)^{RoW} - Fcb^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:55}
+\tag{55}
+(\Delta B_s^{CHL}) = G^{CHL}-T^{CHL}+ r(-1)^{CHL}*B_s(-1)^{CHL} - Fcb^{CHL}
+\end{equation}
+
+*Current and Capital Account*
+
+\begin{equation}\label{eq:56}
+\tag{56}
+\begin{aligned}
+{CAB}^{CHL}=X^{CHL}\ -\ {IM}^{CHL}\ -\ r_{(-1)}^{CHL}\ast B_{bRoW_s(-1)}^{CHL} \\ 
++{\ r}_{(-1)}^{RoW}\ast B_{bCHL_s(-1)}^{RoW}\ast{xr}^{RoW}\ +\ r_{(-1)}^{RoW}\ast B_{cbCHL_s(-1)}^{RoW}\ast{xr}^{RoW}
+\end{aligned}
+\end{equation}
+
+\begin{equation}\label{eq:57}
+\tag{57}
+{KAB}^{CHL}\ =\ (\Delta Bb_RoW_s^{CHL}) - (\Delta Bcb_CHL_s^{RoW}) \* xr^{RoW}- (\Delta B_CHL_s^{RoW}) \* xr^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:58}
+\tag{58}
+{CAB}^{RoW}=X^{RoW}\ -\ {IM}^{RoW}\ -\ r_{\left(-1\right)}^{RoW}\ast B_{bCHL}^{RoW}\ +{\ r}_{\left(-1\right)}^{CHL}\ast B_{bRoW_s\left(-1\right)}^{CHL}\ast{xr}^{CHL}\ +\ r_{\left(-1\right)}^{CHL}\ast B_{cbRoW_s(-1)}^{CHL}\ast{xr}^{CHL}
+\end{equation}
+
+\begin{equation}\label{eq:59}
+\tag{59}
+{KAB}^{RoW}\ =\ (\Delta Bb_{CHL}s^{RoW}) - (\Delta Bcb_{RoW}s^{CHL}) \* xr^{CHL}- (\Delta B_{RoW}s^{CHL})\* xr^{CHL}
+\end{equation}
+
+
+## Financial Sector and Portfolio Equations in the Local Economy {-}
+
+We also consider some degree of asymmetry in financial products offered by the two financial sectors. $CHL$ financial intermediaries offer the simpler financial product to $CHL$ households DER. It is created by simple securitization of bills, without considering any other factor that affects the price (such as commodity prices for $CLN$). The $CHL$ financial sector buys bills, securitize them (without linking them to any commodity benchmark), and sell the new financial product to $CHL$ household sector. We call this asset “derivative” ($DER$).
+
+*CHL Financial sector*
+
+\begin{equation}\label{eq:60}
+\tag{60}
+B_{b_d}^{CHL}=D_{_s}^{CHL}-B_{bCHL_d}^{RoW}-H_{b_d}^{CHL}+P_{der}\ast{DER}_{_s}
+\end{equation}
+
+\begin{equation}\label{eq:61}
+\tag{61}
+H_{b_d}^{CHL}=\rho_0^{CHL}\ast D_{_s}^{CHL}
+\end{equation}
+	
+\begin{equation}\label{eq:62}
+\tag{62}
+\Delta rd^{CHL}=\rho_2^{CHL}*\Delta r^{CHL}
+\end{equation}
+	
+\begin{equation}\label{eq:63}
+\tag{63}
+{CG}_b^{CHL}=(\Delta xr^{RoW})*Bb_CHL_s(-1)^{RoW}
+\end{equation}
+	
+\begin{equation}\label{eq:64}
+\tag{64}
+F_b^{CHL}=r_{\left(-1\right)}^{CHL}\ast B_{b_d(-1)}^{CHL}-r_d^{CHL}\ast D_{_s(-1)}^{CHL}+r_{\left(-1\right)}^{RoW}\ast B_{bCHL_d(-1)}^{RoW}\ast{xr}^{RoW}\ +{CG}_b^{CHL}-{DER}_{_s(-1)}
+\end{equation}
+
+\begin{equation}\label{eq:65}
+\tag{65}
+P_{der}=\frac{1}{r_{der}}
+\end{equation}
+
+\begin{equation}\label{eq:66}
+\tag{66}
+{{DP}_{der}}^e=\Delta P_{der}/ P_{der}
+\end{equation}
+
+
+*Asset demand for CHL resident*
+
+\begin{equation}\label{eq:67}
+\tag{67}
+\left[\begin{matrix}B_{CHL_d}^{CHL}\\D_{_d}^{CHL}\\P_{der}\ast{DER}_{_s}\\\end{matrix}\right]=\left[\begin{matrix}\ \lambda_{10}^{CHL}\\\lambda_{20}^{CHL}\ \\\lambda_{30}^{CHL}\ \\\end{matrix}\right]\ast V^{CHL}+\left[\begin{matrix}\lambda_{11}^{CHL}&\lambda_{12}^{CHL}&\lambda_{13}^{CHL}\\\lambda_{21}^{CHL}&\lambda_{22}^{CHL}&\lambda_{23}^{CHL}\\\lambda_{31}^{CHL}&\lambda_{32}^{CHL}&\lambda_{33}^{CHL}\\\end{matrix}\right]\ast\ \left[\begin{matrix}r^{CHL}\\r_b\\r_{fp}+{{DP}_{der}}^e\\\end{matrix}\right]\ast V^{CHL}
+\end{equation}
+
+*Capital Gains*
+
+\begin{equation}\label{eq:68}
+\tag{68}
+{CG}^{CHL}=(\Delta p_{der})*DER_s(-1)
+\end{equation}
+
+## Central Banks, Assets Supply and Exchange Rate Closure {-}
+
+The model assumes, in line with @godley_monetary_2012, that the supply of assets matches demand. Equations (\ref{eq:73}) to (\ref{eq:86}) show all the identities for the several asset classes used in the model. Central Bank profits are made up of the interest payment due on treasury bills (\ref{eq:69}-\ref{eq:70}) and they are redistributed back to local governments (\ref{eq:54}-\ref{eq:55}). Moreover, changes in central banks stocks of domestic Treasury bills are equal to changes in the liabilities of each central bank, as shown in equation (\ref{eq:67}) and (\ref{eq:68}). Once again, the equation for the $CHL$ central bank is enlarged with foreign bills held as reserves. 
+Having defined all the equations for both countries, it is now possible to define the (floating) exchange rate closure (\ref{eq:87}-\ref{eq:94}).
+
+*Central Bank*
+
+\begin{equation}\label{eq:69}
+\tag{69}
+(\Delta B_{cbRoW_d}^{RoW})=({\Delta H}_{_s}^{RoW})+({\Delta H}_{b_s}^{RoW})
+\end{equation}
+
+\begin{equation}\label{eq:70}
+\tag{70}
+({\Delta B}_{cbCHL_d}^{CHL})=(\Delta H_{_s}^{CHL})+(\Delta H_{b_s}^{CHL})-({\Delta B}_{cbCHL_d}^{RoW})\ast{xr}^{RoW} 
+\end{equation}
+
+\begin{equation}\label{eq:71}
+\tag{71}
+F_{cb}^{CHL}\ =\ r_{\left(-1\right)}^{CHL}\ast{Bcb}_{CHL_d\left(-1\right)}^{CHL}+\ r_{\left(-1\right)}^{RoW}\ast{Bcb}_{CHL_s\left(-1\right)}^{RoW}\ast{xr}^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:72}
+\tag{72}
+F_{cb}^{RoW}\ =\ r_{\left(-1\right)}^{RoW}\ast{Bcb}_{RoW_d\left(-1\right)}^{RoW}
+\end{equation}
+
+
+*Demand for cash*
+
+\begin{equation}\label{eq:73}
+\tag{73}
+H_{_d}^{RoW}=\ V^{RoW}\ -\ B_{RoW_d}^{RoW}-\ D_{_d}^{RoW}-\ P_{cln}\ast{CLN}_{_d}
+\end{equation}
+
+\begin{equation}\label{eq:74}
+\tag{74}
+H_{_d}^{CHL}=V^{CHL}\ -\ B_{LA_d}^{CHL}-D_{_d}^{CHL}\ -P_{der}\ast{DER}_{_d}
+\end{equation}
+
+*Supply of stocks equals demand*
+
+\begin{equation}\label{eq:75}
+\tag{75}
+H_{_s}^{RoW}=\ H_{_d}^{RoW}
+\end{equation}
+	
+\begin{equation}\label{eq:76}
+\tag{76}
+H_{_s}^{CHL}=H_{_d}^{CHL}
+\end{equation}
+	
+\begin{equation}\label{eq:77}
+\tag{77}
+D_{_s}^{RoW}=D_{_d}^{RoW}
+\end{equation}
+	
+\begin{equation}\label{eq:78}
+\tag{78}
+D_{_s}^{CHL}=D_{_d}^{CHL}
+\end{equation}
+	
+\begin{equation}\label{eq:79}
+\tag{79}
+B_{RoW_s}^{RoW}=\ B_{RoW_d}^{RoW}
+\end{equation}
+	
+\begin{equation}\label{eq:80}
+\tag{80}
+B_{CHL_s}^{CHL}=B_{CHL_d}^{CHL}
+\end{equation}
+	
+\begin{equation}\label{eq:81}
+\tag{81}
+{CLN}_{_s}={CLN}_{_d}
+\end{equation}
+	
+\begin{equation}\label{eq:82}
+\tag{82}
+{DER}_{_s}={DER}_{_d}
+\end{equation}
+	
+\begin{equation}\label{eq:83}
+\tag{83}
+B_{b_s}^{RoW}=\ B_{b_d}^{RoW}
+\end{equation}
+	
+\begin{equation}\label{eq:84}
+\tag{84}
+B_{b_s}^{CHL}=B_{b_d}^{CHL}
+\end{equation}
+	
+\begin{equation}\label{eq:85}
+\tag{85}
+H_{b_s}^{RoW}=H_{b_d}^{RoW}
+\end{equation}
+	
+\begin{equation}\label{eq:86}
+\tag{86}
+H_{b_s}^{CHL}=H_{b_d}^{CHL}
+\end{equation}
+	
+\begin{equation}\label{eq:87}
+\tag{87}
+B_{cbRoW_s}^{RoW}=\ B_{cbRoW_d}^{RoW}
+\end{equation}
+	
+\begin{equation}\label{eq:88}
+\tag{88}
+B_{cbCHL_s}^{CHL}=B_{cbCHL_d}^{CHL}
+\end{equation}
+
+*Exchange rate closure*
+
+\begin{equation}\label{eq:89}
+\tag{89}
+{xr}^{RoW}=\frac{1}{{xr}^{CHL}}
+\end{equation}
+	
+\begin{equation}\label{eq:90}
+\tag{90}
+B_{bRoW_s}^{CHL}=B_{bRoW_d}^{CHL}\ast{xr}^{RoW}
+\end{equation}
+	
+\begin{equation}\label{eq:91}
+\tag{91}
+{\Delta B}_{cbCHL_d}^{RoW}={\Delta B}_{cbCHL_s}^{RoW}\ast{xr}^{RoW}
+\end{equation}
+	
+	
+\begin{equation}\label{eq:92}
+\tag{92}
+B_{bCHL_s}^{RoW}=\ B_{_s}^{RoW}\ -\ B_{RoW_s}^{RoW}-\ B_{cb_d}^{RoW}\ -\ B_{cbCHL_s}^{RoW}\ \ -\ B_{b_s}^{RoW}
+\end{equation}
+	
+\begin{equation}\label{eq:93}
+\tag{93}
+B_{b{CHL}_s}^{RoW}=\ \frac{B_{b{CHL}_d}^{RoW}}{{xr}^{RoW}}
+\end{equation}
+	
+
+*Redundant euqation*
+	
+\begin{equation}\label{eq:94}
+\tag{94}
+B_{b{CHL}_s}^{RoW}=\ \frac{B_{b{CHL}_d}^{RoW}}{{xr}^{RoW}}
+\end{equation}
+
+## Additional equation for figures {-}
+
+	
+\begin{equation}\label{eq:95}
+\tag{95}
+{RER}^{CHL}={xr}^{CHL}\ast\left(\frac{p_y^{CHL}}{p_y^{RoW}}\right)
+\end{equation}
+	
+\begin{equation}\label{eq:96}
+\tag{96}
+{RER}^{RoW}={xr}^{RoW}\ast\left(\frac{p_y^{RoW}}{p_y^{CHL}}\right)
+\end{equation}
+
+\begin{equation}\label{eq:97}
+\tag{97}
+Cchl=\frac{c^{CHL}}{y^{CHL}}
+\end{equation}
+
+\begin{equation}\label{eq:98}
+\tag{98}
+CA=\frac{{CAB}^{CHL}}{Y^{CHL}}
+\end{equation}
+
+\begin{equation}\label{eq:99}
+\tag{99}
+TA=\frac{{X}^{CHL}-{M}^{CHL}}{Y^{CHL}}
+\end{equation}
+
+\begin{equation}\label{eq:100}
+\tag{100}
+GB=\frac{- \Delta B_s^{RoW}}{Y^{CHL}}
+\end{equation}
+
+\begin{equation}\label{eq:101}
+\tag{101}
+PB=CA-GB
+\end{equation}
+
+\begin{equation}\label{eq:102}
+\tag{102}
+nipchl=\frac{r(-1)^{CHL}*B_s(-1)^{CHL}}{Y^{CHL}}
+\end{equation}
+
+\begin{equation}\label{eq:103}
+\tag{103}
+govdebchl=\frac{B_s^{CHL}}{Y^{CHL}}
+\end{equation}
+
+\begin{equation}\label{eq:104}
+\tag{104}
+nwchl=(V^{CHL}-B_s^{CHL}+(B_{b_d}^{CHL}-D_{_s}^{CHL}+B_{bCHL_d}^{RoW}+H_{b_d}^{CHL}-P_{der}\ast{DER}_{_s})+(B_{cbCHL_s}^{RoW}+B_{cbCHL_s}^{CHL}-H_{_d}^{CHL})
+\end{equation}
+
+\begin{equation}\label{eq:105}
+\tag{105}
+sh_{bRoW_s}^{CHL}=\frac{B_{bRoW_s}^{CHL}}{B_s^{CHL}}
+\end{equation}
+
+\begin{equation}\label{eq:106}
+\tag{106}
+sh_{CLN}=\frac{P_{cln}\ast{CLN}_{_s}}{V^{RoW}}
+\end{equation}
+
+\begin{equation}\label{eq:107}
+\tag{107}
+B_{bRoW_d}^{CHL}=\rho_1^{RoW}\ast{CLN}_{_s}+\rho_3^{RoW}\ast{CG}_b^{RoW}
+\end{equation}
+
+\begin{equation}\label{eq:108}
+\tag{108}
+B_{bCHL_d}^{RoW}=\rho_1^{CHL}\ast{DER}_{_s}+\rho_3^{CHL}\ast{CG}_b^{CHL}
+\end{equation}
+
+
+\newpage
+# Appendix 3 - Qualitative comparison: simulation vs observed data {-}
+
+```{r tab3, echo=FALSE, results='asis', fig.align='center'}
+cat(' Table: \\label{tab:tab3}Results from simulation compared with real life data, Period 2004-2014
+
+---------------------------------------------------------------------------------------------------
+**Variables**                         **Simulation**                         **Data**                               
+---------------------------------- ------------------------------ ---------------------------------
+RER                                     Increase (appreciation)    2% appreciation from begging to 
+                                                                   end of the period (2005)                        
+                 
+TB/Y                                Overall increase,              Overall increase from 10% to 14
+                                    only slightly 	               before 2008 adjustment to 3%.
+                                    adjust after 2009 crisis       Recovers to 8% after 2009, then           
+                                                                   progressively weakens to 0% 
+                                                                   in 2013            
+                                                                                                               
+CAB/Y                               Overall increase,              Increase from 2004 to 2007 
+                                    only slightly 	               from -0.17 to 3.5 % GDP.
+                                    adjust after 2009 crisis       Then falls to -3.5  in 2008 
+                                                                   and after a brief recovery 
+                                                                   averaging 1,5% in 2010/11 
+                                                                   it slides into negative 
+                                                                   territory, scoring -4% 
+                                                                   in 2013
+
+KAB/Y                               Decrease  	                   Decrease from -3  to -5  GDP 
+                                                                   from 2004 to 2007. After a 
+                                                                   spike in 2009, it slides into 
+                                                                   average -1% in 2010/11, and 
+                                                                   it bounces back to positive 
+                                                                   from 2012 onward
+
+(G-T)/Y                             Improvement                    Improvement from 2004 to 2007 
+                                                                   (2 vs 7,8  PIB)
+                                                                   After a drop in 2009 (-4.3) 
+                                                                   bounce back to 1,3 , although 
+                                                                   tend to decrease
+
+ DEBT/Y                             Decrease	                     Decrease from 2004 to 2007, 
+                                                                   from 10.6 to 3.9 %.
+                                                                   Increase from 2008 to 2014 from 
+                                                                   5.1% to 15.1%  
+
+ NAFA/Y                             Increase	                     Decrease from -0.5 % to -6.3 
+                                                                   Jumps to 5,2 in 2009 but then 
+                                                                   returns into negative territory 
+                                                                   from 2011 on.
+
+C/Y                                  Increase after a  	           Remained stable around the 
+                                     small drop                    average of 60  of GDP.
+
+WEALT / Y                            Higher	                       Increase from 2004 to 2007 from 
+                                                                   0,9 to 7,3  GDP. 
+                                                                   Then falls to -10  in 2008 and 
+                                                                   after a brief recovery averaging 
+                                                                   3% 2009/11 it slide into 
+                                                                   negative territory, scoring 
+                                                                   -0.8% in 2013
+
+Y/P                                  Increase 	                   Average increase of 6  per year 
+                                                                   during the period, with a drop 
+                                                                   of 2  in 2009, with a slowdown 
+                                                                   in 2013 (4 %)
+
+---------------------------------------------------------------------------------------------------                                             
+
+
+Source: Own elaboration.
+')
+```
+\newpage
+```{r tab4, echo=FALSE, results='asis', fig.align='center'}
+cat(' Table: \\label{tab:tab4}Wrapping up of the different positions on the RER, Period 2015-2018 
+
+---------------------------------------------------------------------------------------------------
+**Variables**                         **Simulation**                         **Data**                               
+---------------------------------- ------------------------------ ---------------------------------
+RER	                                 Depreciation 	                  7% Depreciation 
+
+TB/Y	                               Decrease; stabilizes to         Initially, in 2014 fall to -1% 
+                                     lower steady-state level        Then stabilized around 0.5% 
+                                     	
+CAB/Y	                               Overall increase, slightly      Fall from 2014 to 2015   
+                                     adjust after 2009 crisis	       (-1.7 to -2.5).
+                                                                     Then remained stable around 
+                                                                     -1.5%
+
+KAB/ Y	                             Increase; stabilizes to         Remains stable around 3/2%
+                                     higher steady state level	
+
+(G-T)/Y	                             Worsening	                     Worsened from -1.6% to -2.75% 
+                                                                     in 2017
+
+DEBT/Y	                             Increase; stabilizes to         Increased From 15.5 to 25 
+                                     higher steady state level	     GDP % point
+
+NAFA/Y	                             Decrease; stabilizes to         Increase from -0.16% to 1.3%
+                                     lower steady state level	
+
+C/Y	                                 Decrease; stabilizes to         Stabilized around 63% of GDP 
+                                     lower steady state level	       from 2014 to 2019
+
+WEALT / Y	                           Decrease; stabilizes to         Deteriorates from 0.8 to 6.9
+                                     lower steady state level	       and 4.2 % in 2014, 2015 and 
+                                                                     2016, then it stabilizes 
+                                                                     around 0.6%
+                                                                     
+Y/P	                                 Decrease; stabilizes to         Weaker growth 
+                                     lower steady state level	       (in the 2% to 1% range)
+
+---------------------------------------------------------------------------------------------------                                             
+
+Source: Own elaboration.
+')
+```
+
+\newpage
+# Appendix 4 - Model Validation {-}
+
+```{r fig8, fig.cap="\\label{fig:fig8}Output auto correlation and Output-Consumption cross-correlation. Source: Own elaboration. Note: Series were detrended using a Hodrick-Prescott filter and are expressed in logarithms. Both observed data and simulations refers to the 2000-2018 period.", echo=FALSE, results='asis', fig.align='center', fig.pos = 'h'}
+library(knitr)
+include_graphics("C:/Users/Giuliano Toshiro/OneDrive - uniroma1.it/images/immagini thesis/Diapositiva36.png")
+```
+
+\newpage
+# Appendix 5 - Parameters and initial values {-}
+
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Variables and parameters of the two open economies | Symbols                  | Baseline | Scenario 1        |
++===================================================+==========================+==========+===================+
+|marginal propensity to consume out of income CHL	  | $\alpha_1^{CHL}$         | 0.9      |	                  |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|marginal propensity to consume out of income RoW	  | $\alpha_1^{RoW}$         | 0.6	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|marginal propensity to consume out of wealth CHL	  | $\alpha_2^{CHL}$         | 0.0534   |	                  |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|marginal propensity to consume out of wealth RoW   |$\alpha_2^{RoW}$          | 0.2134   |                   |    	
++---------------------------------------------------+--------------------------+----------+-------------------+
+|autonomous demand of Exports CHL                   | $\varepsilon_0^{CHL}$    | \- 1.18  |	                  |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|price elasticity of Exports CHL                    |$\eta^{CHL}$              | 0.7	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|income elasticity of Exports CHL	                  | $\varepsilon^{CHL}$      | 0.8      |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|autonomous demand of CHL bills of residents CHL    |$\lambda_{10}^{CHL}$      | 0.4	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for CHL bills        |$\lambda_{11}^{CHL}$      | 0.5	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for CHL deposits     |$\lambda_{12}^{CHL}$      | 0.25	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for CHL Derivatives  |$\lambda_{13}^{CHL}$      | 0.25	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|autonomous demand of deposits CHL                  |$\lambda_{20}^{CHL}$      | 0.4      |                   |	
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for CHL bills        |$\lambda_{21}^{CHL}$      | 0.25	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for CHL deposits     |$\lambda_{22}^{CHL}$      | 0.5	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for CHL Derivatives  |$\lambda_{23}^{CHL}$      | 0.25	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|autonomous demand of assets of DER                 |$\lambda_{30}^{CHL}$      | 0.1	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for CHL bills        |$\lambda_{31}^{CHL}$      | 0.25	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for CHL deposits     |$\lambda_{32}^{CHL}$      | 0.25	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for CHL Derivatives  |$\lambda_{33}^{CHL}$      | 0.5	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|autonomous demand of assets of RoW Bills           |$\lambda_{10}^{RoW}$      | 0.4	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for RoW bills        |$\lambda_{11}^{RoW}$      | 0.5	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for RoW deposits     |$\lambda_{12}^{RoW}$      | 0.25	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for RoW CLNs         |$\lambda_{13}^{RoW}$      | 0.25	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|autonomous demand of Deposits CHL                  |$\lambda_{20}^{RoW}$      | 0.5	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for RoW bills        |$\lambda_{21}^{RoW}$      | 0.25	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for RoW deposits     |$\lambda_{22}^{RoW}$      | 0.5      |                   |	
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for RoW CLNs	        |$\lambda_{23}^{RoW}$      | 0.25     |                   |	
++---------------------------------------------------+--------------------------+----------+-------------------+
+|autonomous demand of CLN 	                        |$\lambda_{30}^{RoW}$      | 0.1      |                   |	
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for RoW bills	      |$\lambda_{31}^{RoW}$      | 0.25     |                   |	
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for RoW deposits     |$\lambda_{32}^{RoW}$      | 0.25	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Portfolio parameter of demand for RoW CLNs         |$\lambda_{33}^{RoW}$      | 0.5      |	                  |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|autonomous demand of Imports CHL                   |$\varrho^{CHL}$           |	\- 2.1  | \- 3.015          |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|price elasticity of Imports CHL                    |$\psi^{CHL}$              | 0.7	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|income elasticity of Imports CHL                   |$\pi^{CHL}$               | 1.2      |                   |	
++---------------------------------------------------+--------------------------+----------+-------------------+
+|shock to Import price CHL	                        |$\mu_0^{CHL}$             |\- 0.00001|                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|shock to Export price CHL                          |$\chi_0^{CHL}$            |\- 0.00001|                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|RER elasticity of import prices CHL                |$\mu_1^{CHL}$             | 0.7	    |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|RER elasticity of export prices CHL                |$\chi_1^{CHL}$            | 0.5      |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|CHL mark up                                        |$\varphi^{CHL}$           | 0.2381   |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|RoW mark up                                        |$\varphi^{RoW}$           | 0.2381   |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|CHL marginal Tax Rate                              |$\theta^{CHL}$            | 0.2      |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|RoW Marginal Tax Rate                              |$\theta^{RoW}$            | 0.2      |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Fractional Reserve of RoW intermediaries           |$\rho_0^{RoW}$            | 0.03     |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Fraction of Foreign Bills in RoW Banks’ portfolio  |$\rho_1^{RoW}$            | 2.7      |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Spread between RoW deposit rate and Bills          |$\rho_2^{RoW}$            | 0.9      |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Fractional Reserve of CHL intermediaries           |$\rho_0^{CHL}$            | 0.03     |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Fraction of Foreign Bills in CHL Banks’ portfolio  |$\rho_1^{CHL}$            | 2.7      |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Spread between CHL deposit rate and Bills          |$\rho_2^{CHL}$            | 0.9      |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Foreign Reserves CHL                               |$B_{cbCHL_s}^{RoW}$       | 0.02031  |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Real Government Expenditure CHL                    |$g^{CHL}$                 | 16       |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Real Government Expenditure RoW                    |$g^{RoW}$                 | 16       |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Labour Productivity CHL                            |${pr}^{CHL}$              | 1,3333   |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Labour Productivity RoW                            |${pr}^{RoW}$              | 1,3333   |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Interest Rate on CHL Bills                         |$r^{CHL}$                 | 0.03     |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Interest Rate on RoW Bills                         |$r^{RoW}$                 | 0.03     |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Deposit Rate RoW                                   |$r_d^{RoW}$               | 0.01     |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Deposit Rate CHL                                   |$r_d^{CHL}$               | 0.01     |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Interest Rate on CLN                               |$r_{cln}$                 | 0.16     |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Price of CLN                                       |$P_{cln}$                 | 6.25     |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Interest Rate on DER                               |$r_{der}$                 | 0.16     |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Price of DER                                       |$P_{der}$                 | 6.25     |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Wage rate CHL                                      |$W^{CHL}$                 | 1        |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|Wage rate RoW                                      |$W^{RoW}$                 | 1        |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|CHL Banks' sensitivity to CG                       |$\rho_3^{CHL}$            | 1        |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+
+|RoW Banks' sensitivity to CG                       |$\rho_3^{CHL}$            | 1        |                   |
++---------------------------------------------------+--------------------------+----------+-------------------+   
+
+
+\newpage
+# Appendix 6 - Sensitivity Analysis  {-}
+
+We have carried out six different sensitivity analysis to assess the conclusions of our experiment^[again, the equations used to build the figures can be found in the [appendix 2][Additional equation for figures]. ]. In particular, in the first four alternative baseline we considered alternative values for the selected exogenous variables. The fifth baseline encompass a different specification for equation \ref{eq:8}, while the sixth analysis perform only one positive shock to $\chi_1^{CHL}$, spanning 10 periods.
+
+As expected, all the alternative specifications do confirm the results of our original experiment, since the selected variables do not display a slightly different behaviour once they are subject to the shock explained in \ref{scenario-analysis}, besides the deviation to the starting baseline. Conversely, the alternative shock does show some differences, in particular with respect of the lack of the hysteresis in $xr^{CHL}$. Nonetheless, it should be pointed out that our experiment concerned the dynamic of an economy subject to *exogenous* and *asymmetric* price fluctuations. Hence, as long as we are looking at these stylized facts, the *external validity* of our model should be granted.
+
+\newpage
+\blandscape
+```{r fig9, fig.cap="\\label{fig:fig9}Sensitivity analysis: fractional Reserve of RoW intermediaries. Source: Own elaboration. Note: the new value is 0.05.", echo=FALSE, results='asis', fig.align='center', fig.pos = 'h'}
+
+#Sensitivity analysis: fractional Reserve of RoW intermediaries.
+external2 <- sfcr_set(
+  alpha_1la ~ 0.9,
+  alpha_1us ~ 0.6,
+  alpha_2la ~ 0.053333276,
+  alpha_2us ~ 0.213326723889398,
+  #vertical and horizontal constraints respected
+  lambda_10la ~ 0.4,
+  lambda_11la ~ 0.5,
+  lambda_12la ~ 0.5,
+  lambda_13la~ 0.25,
+  lambda_14la~ 0.25,
+  lambda_20la ~ 0.3,
+  lambda_21la ~ 0.5,
+  lambda_22la ~ 0.5,
+  lambda_23la~ 0.5,
+  lambda_40la ~ 0.4,
+  lambda_41la ~ 0.25,
+  lambda_42la ~ 5,
+  lambda_43la~ 0.5,
+  lambda_44la~ 0.25,
+  lambda_50la ~ 0.1,
+  lambda_51la ~ 0.25,
+  lambda_52la ~ 5,
+  lambda_53la~ 0.25,
+  lambda_54la~ 0.5,
+  #vertical and horizontal constraints respected
+  lambda_24la~ 5,
+  lambda_30la ~ 0.25,
+  lambda_31la ~ 5,
+  lambda_32la ~ 5,
+  lambda_33la~ 5,
+  lambda_34la~ 5,
+  #vertical and horizontal constraints respected
+  lambda_10us ~ 0.4,
+  lambda_11us ~ 0.5,
+  lambda_12us ~ 0.5,
+  lambda_13us~ 0.25,
+  lambda_14us~ 0.25,
+  lambda_20us ~ 0.3,
+  lambda_21us ~ 0.5,
+  lambda_22us ~ 0.5,
+  lambda_23us~ 0.5,
+  lambda_40us ~ 0.4,
+  lambda_41us ~ 0.25,
+  lambda_42us ~ 5,
+  lambda_43us~ 0.5,
+  lambda_44us~ 0.25,
+  lambda_50us ~ 0.1,
+  lambda_51us ~ 0.25,
+  lambda_52us ~ 5,
+  lambda_53us~ 0.25,
+  lambda_54us~ 0.5,
+  #vertical and horizontal constraints respected
+  lambda_24us~ 5,
+  lambda_30us ~ 0.25,
+  lambda_31us ~ 5,
+  lambda_32us ~ 5,
+  lambda_33us~ 5,
+  lambda_34us~ 5,
+  #vertical and horizontal constraints respected
+  lambda_60us~0.5,
+  lambda_61us~0.5,
+  lambda_62us~0.5,
+  lambda_70us~0.5,
+  lambda_71us~0.5,
+  lambda_72us~0.5,
+  lambda_60la~0.5,
+  lambda_61la~0.5,
+  lambda_62la~0.5,
+  lambda_70la~0.5,
+  lambda_71la~0.5,
+  lambda_72la~0.5,
+  #vertical and horizontal constraints respected
+  e_la ~ - 1.18,
+  eta_la ~ 0.7,
+  epsilon_la ~ 0.8,
+  p_la ~ - 3.015,
+  psi_la ~ 0.7,
+  pi_la ~  1.2,
+  mi_0la ~ - 0.00001,
+  chi_0la ~ - 0.00001,
+  mi_1la ~ 0.7,
+  chi_1la ~ 0.2,
+  phila ~ 0.2381,
+  phius ~ 0.2381,
+  thetala ~ 0.2,
+  thetaus ~ 0.2,
+  thetabla ~ 0,
+  thetabus ~ 0,
+  rho_0us~0.05,
+  rho_1us~0.9,
+  rho_2us~2.7,
+  rho_0la~0.03,
+  rho_1la~0.9,
+  rho_2la~2.7,
+  rho_0int~0.9,
+  rho_1int~0.9,
+  rho_2int~0.9,
+  # exogenous variables
+  bcblaus_s ~ 0.02031,
+  r_gla ~ 16,
+  r_gus ~ 16,
+  r_prla ~ 1.3333,
+  r_prus ~ 1.3333,
+  rla ~ 0.03,
+  rus ~ 0.03,
+  rcba~0.16,
+  rder~0.16,
+  wla ~ 1,
+  wus ~ 1
+)
+
+cba9 <- sfcr_baseline(
+  equations = eqs, 
+  external = external2,
+  initial=initial,
+  periods = 150, 
+  
+)
+
+#cba3
+
+
+cba10 <- sfcr_scenario(
+  baseline = cba9,
+  scenario = list(shock1, shock2),
+  periods = 150
+)
+
+#cba4
+
+p1 <- cba10 %>%
+  ggplot( aes(x=period, y=r_yla)) +
+  geom_line(aes(colour="CHL real output")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="ychl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none")
+p2 <- cba10 %>%
+  ggplot( aes(x=period, y=rsh_cla)) +
+  geom_line(aes(colour="CHL consumption % GDP")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="Cchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  theme(legend.position = "none")
+p3 <- cba10 %>%
+  ggplot( aes(x=period, y=sh_cabla)) +
+  geom_line( aes(color="CA % GDP"))+
+  #geom_line(aes(x=period, y=sh_tbla, color="TA % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="CA") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p4 <- cba10 %>%
+  ggplot( aes(x=period, y=sh_govdef)) +
+  geom_line(aes(color="CA % GDP")) +
+  #geom_line(aes(x=period, y=sh_govdef, color="GB % GDP")) +
+  #geom_line(aes(x=period, y=sh_prbla, color="PB % GDP")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="GB") +
+  scale_color_manual(values =c("blue", "red", "green") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+#grid.arrange(p1, p2, p3, p4, nrow = 2)
+
+p5 <- cba10 %>%
+  ggplot( aes(x=period, y = rerla)) +
+  geom_line(aes(color="RER CHL")) +
+  #geom_line(aes(y = pxla/pmla, color="TOT CHL"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="RERchl") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p6 <- cba10 %>%
+  ggplot( aes(x=period, y=cgus)) +
+  geom_line(aes(color="Capital gains on CLNs")) +
+  #geom_line(aes(x=period, y=cgbus, color="Capital gains on CHL bills"))   +
+  theme(axis.title.x=element_blank())+
+  labs(y ="GCcln") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p7 <- cba10 %>%
+  ggplot( aes(x=period, y=pcba)) +
+  geom_line(aes(color="Price of CLNs"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="pCLN") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none")
+p8 <- cba10 %>%
+  ggplot( aes(x=period, y=nip)) +
+  geom_line(aes(color="Interest payment on CHL debt % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="nipchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+
+#grid.arrange(p5, p6, p7, p8, nrow = 2)
+
+p9 <- cba10 %>%
+  ggplot( aes(x=period, y = govdeb)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(1.50,1.65)) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="govdebchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+p10 <- cba10 %>%
+  ggplot( aes(x=period, y=nwla)) +
+  #geom_bar(aes(x=period, y=nwus)) +
+  geom_bar(stat = "identity", color="red") +
+  theme(axis.title.x=element_blank())+
+  labs(y ="nwchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  theme(legend.position = "none")
+p11 <- cba10 %>%
+  ggplot( aes(x=period, y=sh_bbusla_s)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(0.04,0.11)) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="sh_bbrowchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+p12 <- cba10 %>%
+  ggplot( aes(x=period, y=sh_cba)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(0.147,0.165))+
+  theme(axis.title.x=element_blank())+
+  labs(y ="sh_cln") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+
+#grid.arrange(p9, p10, p11, p12, nrow = 2)
+
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, nrow = 4)
+
+
+```
+\elandscape
+
+\newpage
+\blandscape
+```{r fig10, fig.cap="\\label{fig:fig10}Sensitivity analysis: fraction of Foreign Bills in RoW Intermediaries’ portfolio. Source: Own elaboration. Note: the new value is 1.35.", echo=FALSE, results='asis', fig.align='center', fig.pos = 'h'}
+
+#Sensitivity analysis: fraction of Foreign Bills in RoW Intermediaries’ portfolio
+external3 <- sfcr_set(
+  alpha_1la ~ 0.9,
+  alpha_1us ~ 0.6,
+  alpha_2la ~ 0.053333276,
+  alpha_2us ~ 0.213326723889398,
+  #vertical and horizontal constraints respected
+  lambda_10la ~ 0.4,
+  lambda_11la ~ 0.5,
+  lambda_12la ~ 0.5,
+  lambda_13la~ 0.25,
+  lambda_14la~ 0.25,
+  lambda_20la ~ 0.3,
+  lambda_21la ~ 0.5,
+  lambda_22la ~ 0.5,
+  lambda_23la~ 0.5,
+  lambda_40la ~ 0.4,
+  lambda_41la ~ 0.25,
+  lambda_42la ~ 5,
+  lambda_43la~ 0.5,
+  lambda_44la~ 0.25,
+  lambda_50la ~ 0.1,
+  lambda_51la ~ 0.25,
+  lambda_52la ~ 5,
+  lambda_53la~ 0.25,
+  lambda_54la~ 0.5,
+  #vertical and horizontal constraints respected
+  lambda_24la~ 5,
+  lambda_30la ~ 0.25,
+  lambda_31la ~ 5,
+  lambda_32la ~ 5,
+  lambda_33la~ 5,
+  lambda_34la~ 5,
+  #vertical and horizontal constraints respected
+  lambda_10us ~ 0.4,
+  lambda_11us ~ 0.5,
+  lambda_12us ~ 0.5,
+  lambda_13us~ 0.25,
+  lambda_14us~ 0.25,
+  lambda_20us ~ 0.3,
+  lambda_21us ~ 0.5,
+  lambda_22us ~ 0.5,
+  lambda_23us~ 0.5,
+  lambda_40us ~ 0.4,
+  lambda_41us ~ 0.25,
+  lambda_42us ~ 5,
+  lambda_43us~ 0.5,
+  lambda_44us~ 0.25,
+  lambda_50us ~ 0.1,
+  lambda_51us ~ 0.25,
+  lambda_52us ~ 5,
+  lambda_53us~ 0.25,
+  lambda_54us~ 0.5,
+  #vertical and horizontal constraints respected
+  lambda_24us~ 5,
+  lambda_30us ~ 0.25,
+  lambda_31us ~ 5,
+  lambda_32us ~ 5,
+  lambda_33us~ 5,
+  lambda_34us~ 5,
+  #vertical and horizontal constraints respected
+  lambda_60us~0.5,
+  lambda_61us~0.5,
+  lambda_62us~0.5,
+  lambda_70us~0.5,
+  lambda_71us~0.5,
+  lambda_72us~0.5,
+  lambda_60la~0.5,
+  lambda_61la~0.5,
+  lambda_62la~0.5,
+  lambda_70la~0.5,
+  lambda_71la~0.5,
+  lambda_72la~0.5,
+  #vertical and horizontal constraints respected
+  e_la ~ - 1.18,
+  eta_la ~ 0.7,
+  epsilon_la ~ 0.8,
+  p_la ~ - 3.015,
+  psi_la ~ 0.7,
+  pi_la ~  1.2,
+  mi_0la ~ - 0.00001,
+  chi_0la ~ - 0.00001,
+  mi_1la ~ 0.7,
+  chi_1la ~ 0.2,
+  phila ~ 0.2381,
+  phius ~ 0.2381,
+  thetala ~ 0.2,
+  thetaus ~ 0.2,
+  thetabla ~ 0,
+  thetabus ~ 0,
+  rho_0us~0.03,
+  rho_1us~0.9,
+  rho_2us~1.35,
+  rho_0la~0.03,
+  rho_1la~0.9,
+  rho_2la~2.7,
+  rho_0int~0.9,
+  rho_1int~0.9,
+  rho_2int~0.9,
+  # exogenous variables
+  bcblaus_s ~ 0.02031,
+  r_gla ~ 16,
+  r_gus ~ 16,
+  r_prla ~ 1.3333,
+  r_prus ~ 1.3333,
+  rla ~ 0.03,
+  rus ~ 0.03,
+  rcba~0.16,
+  rder~0.16,
+  wla ~ 1,
+  wus ~ 1
+)
+
+cba11 <- sfcr_baseline(
+  equations = eqs, 
+  external = external3,
+  initial=initial,
+  periods = 150, 
+  
+)
+
+#cba3
+
+
+cba12 <- sfcr_scenario(
+  baseline = cba11,
+  scenario = list(shock1, shock2),
+  periods = 150
+)
+
+#cba4
+
+p1 <- cba12 %>%
+  ggplot( aes(x=period, y=r_yla)) +
+  geom_line(aes(colour="CHL real output")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="ychl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none")
+p2 <- cba12 %>%
+  ggplot( aes(x=period, y=rsh_cla)) +
+  geom_line(aes(colour="CHL consumption % GDP")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="Cchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  theme(legend.position = "none")
+p3 <- cba12 %>%
+  ggplot( aes(x=period, y=sh_cabla)) +
+  geom_line( aes(color="CA % GDP"))+
+  #geom_line(aes(x=period, y=sh_tbla, color="TA % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="CA") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p4 <- cba12 %>%
+  ggplot( aes(x=period, y=sh_govdef)) +
+  geom_line(aes(color="CA % GDP")) +
+  #geom_line(aes(x=period, y=sh_govdef, color="GB % GDP")) +
+  #geom_line(aes(x=period, y=sh_prbla, color="PB % GDP")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="GB") +
+  scale_color_manual(values =c("blue", "red", "green") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+#grid.arrange(p1, p2, p3, p4, nrow = 2)
+
+p5 <- cba12 %>%
+  ggplot( aes(x=period, y = rerla)) +
+  geom_line(aes(color="RER CHL")) +
+  #geom_line(aes(y = pxla/pmla, color="TOT CHL"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="RERchl") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p6 <- cba12 %>%
+  ggplot( aes(x=period, y=cgus)) +
+  geom_line(aes(color="Capital gains on CLNs")) +
+  #geom_line(aes(x=period, y=cgbus, color="Capital gains on CHL bills"))   +
+  theme(axis.title.x=element_blank())+
+  labs(y ="GCcln") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p7 <- cba12 %>%
+  ggplot( aes(x=period, y=pcba)) +
+  geom_line(aes(color="Price of CLNs"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="pCLN") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none")
+p8 <- cba12 %>%
+  ggplot( aes(x=period, y=nip)) +
+  geom_line(aes(color="Interest payment on CHL debt % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="nipchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+
+#grid.arrange(p5, p6, p7, p8, nrow = 2)
+
+p9 <- cba12 %>%
+  ggplot( aes(x=period, y = govdeb)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(1.4,1.55)) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="govdebchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+p10 <- cba12 %>%
+  ggplot( aes(x=period, y=nwla)) +
+  #geom_bar(aes(x=period, y=nwus)) +
+  geom_bar(stat = "identity", color="red") +
+  theme(axis.title.x=element_blank())+
+  labs(y ="nwchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  theme(legend.position = "none")
+p11 <- cba12 %>%
+  ggplot( aes(x=period, y=sh_bbusla_s)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(0.02,0.05)) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="sh_bbrowchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+p12 <- cba12 %>%
+  ggplot( aes(x=period, y=sh_cba)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(0.147,0.165))+
+  theme(axis.title.x=element_blank())+
+  labs(y ="sh_cln") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+
+#grid.arrange(p9, p10, p11, p12, nrow = 2)
+
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, nrow = 4)
+
+
+```
+\elandscape
+
+\newpage
+\blandscape
+```{r fig11, fig.cap="\\label{fig:fig11}Sensitivity analysis: spread between CHL deposit rate and Bills. Source: Own elaboration. Note: the new value is 0.45.", echo=FALSE, results='asis', fig.align='center', fig.pos = 'h'}
+
+#Sensitivity analysis: spread between CHL deposit rate and Bills.
+external4 <- sfcr_set(
+  alpha_1la ~ 0.9,
+  alpha_1us ~ 0.6,
+  alpha_2la ~ 0.053333276,
+  alpha_2us ~ 0.213326723889398,
+  #vertical and horizontal constraints respected
+  lambda_10la ~ 0.4,
+  lambda_11la ~ 0.5,
+  lambda_12la ~ 0.5,
+  lambda_13la~ 0.25,
+  lambda_14la~ 0.25,
+  lambda_20la ~ 0.3,
+  lambda_21la ~ 0.5,
+  lambda_22la ~ 0.5,
+  lambda_23la~ 0.5,
+  lambda_40la ~ 0.4,
+  lambda_41la ~ 0.25,
+  lambda_42la ~ 5,
+  lambda_43la~ 0.5,
+  lambda_44la~ 0.25,
+  lambda_50la ~ 0.1,
+  lambda_51la ~ 0.25,
+  lambda_52la ~ 5,
+  lambda_53la~ 0.25,
+  lambda_54la~ 0.5,
+  #vertical and horizontal constraints respected
+  lambda_24la~ 5,
+  lambda_30la ~ 0.25,
+  lambda_31la ~ 5,
+  lambda_32la ~ 5,
+  lambda_33la~ 5,
+  lambda_34la~ 5,
+  #vertical and horizontal constraints respected
+  lambda_10us ~ 0.4,
+  lambda_11us ~ 0.5,
+  lambda_12us ~ 0.5,
+  lambda_13us~ 0.25,
+  lambda_14us~ 0.25,
+  lambda_20us ~ 0.3,
+  lambda_21us ~ 0.5,
+  lambda_22us ~ 0.5,
+  lambda_23us~ 0.5,
+  lambda_40us ~ 0.4,
+  lambda_41us ~ 0.25,
+  lambda_42us ~ 5,
+  lambda_43us~ 0.5,
+  lambda_44us~ 0.25,
+  lambda_50us ~ 0.1,
+  lambda_51us ~ 0.25,
+  lambda_52us ~ 5,
+  lambda_53us~ 0.25,
+  lambda_54us~ 0.5,
+  #vertical and horizontal constraints respected
+  lambda_24us~ 5,
+  lambda_30us ~ 0.25,
+  lambda_31us ~ 5,
+  lambda_32us ~ 5,
+  lambda_33us~ 5,
+  lambda_34us~ 5,
+  #vertical and horizontal constraints respected
+  lambda_60us~0.5,
+  lambda_61us~0.5,
+  lambda_62us~0.5,
+  lambda_70us~0.5,
+  lambda_71us~0.5,
+  lambda_72us~0.5,
+  lambda_60la~0.5,
+  lambda_61la~0.5,
+  lambda_62la~0.5,
+  lambda_70la~0.5,
+  lambda_71la~0.5,
+  lambda_72la~0.5,
+  #vertical and horizontal constraints respected
+  e_la ~ - 1.18,
+  eta_la ~ 0.7,
+  epsilon_la ~ 0.8,
+  p_la ~ - 3.015,
+  psi_la ~ 0.7,
+  pi_la ~  1.2,
+  mi_0la ~ - 0.00001,
+  chi_0la ~ - 0.00001,
+  mi_1la ~ 0.7,
+  chi_1la ~ 0.2,
+  phila ~ 0.2381,
+  phius ~ 0.2381,
+  thetala ~ 0.2,
+  thetaus ~ 0.2,
+  thetabla ~ 0,
+  thetabus ~ 0,
+  rho_0us~0.03,
+  rho_1us~0.9,
+  rho_2us~2.7,
+  rho_0la~0.03,
+  rho_1la~0.45,
+  rho_2la~2.7,
+  rho_0int~0.9,
+  rho_1int~0.9,
+  rho_2int~0.9,
+  # exogenous variables
+  bcblaus_s ~ 0.02031,
+  r_gla ~ 16,
+  r_gus ~ 16,
+  r_prla ~ 1.3333,
+  r_prus ~ 1.3333,
+  rla ~ 0.03,
+  rus ~ 0.03,
+  rcba~0.16,
+  rder~0.16,
+  wla ~ 1,
+  wus ~ 1
+)
+
+cba13 <- sfcr_baseline(
+  equations = eqs, 
+  external = external4,
+  initial=initial,
+  periods = 150, 
+  
+)
+
+#cba3
+
+
+cba14 <- sfcr_scenario(
+  baseline = cba13,
+  scenario = list(shock1, shock2),
+  periods = 150
+)
+
+#cba4
+
+p1 <- cba14 %>%
+  ggplot( aes(x=period, y=r_yla)) +
+  geom_line(aes(colour="CHL real output")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="ychl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none")
+p2 <- cba14 %>%
+  ggplot( aes(x=period, y=rsh_cla)) +
+  geom_line(aes(colour="CHL consumption % GDP")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="Cchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  theme(legend.position = "none")
+p3 <- cba14 %>%
+  ggplot( aes(x=period, y=sh_cabla)) +
+  geom_line( aes(color="CA % GDP"))+
+  #geom_line(aes(x=period, y=sh_tbla, color="TA % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="CA") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p4 <- cba14 %>%
+  ggplot( aes(x=period, y=sh_govdef)) +
+  geom_line(aes(color="CA % GDP")) +
+  #geom_line(aes(x=period, y=sh_govdef, color="GB % GDP")) +
+  #geom_line(aes(x=period, y=sh_prbla, color="PB % GDP")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="GB") +
+  scale_color_manual(values =c("blue", "red", "green") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+#grid.arrange(p1, p2, p3, p4, nrow = 2)
+
+p5 <- cba14 %>%
+  ggplot( aes(x=period, y = rerla)) +
+  geom_line(aes(color="RER CHL")) +
+  #geom_line(aes(y = pxla/pmla, color="TOT CHL"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="RERchl") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p6 <- cba14 %>%
+  ggplot( aes(x=period, y=cgus)) +
+  geom_line(aes(color="Capital gains on CLNs")) +
+  #geom_line(aes(x=period, y=cgbus, color="Capital gains on CHL bills"))   +
+  theme(axis.title.x=element_blank())+
+  labs(y ="GCcln") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p7 <- cba14 %>%
+  ggplot( aes(x=period, y=pcba)) +
+  geom_line(aes(color="Price of CLNs"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="pCLN") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none")
+p8 <- cba14 %>%
+  ggplot( aes(x=period, y=nip)) +
+  geom_line(aes(color="Interest payment on CHL debt % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="nipchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+
+#grid.arrange(p5, p6, p7, p8, nrow = 2)
+
+p9 <- cba14 %>%
+  ggplot( aes(x=period, y = govdeb)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(1.50,1.65)) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="govdebchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+p10 <- cba14 %>%
+  ggplot( aes(x=period, y=nwla)) +
+  #geom_bar(aes(x=period, y=nwus)) +
+  geom_bar(stat = "identity", color="red") +
+  theme(axis.title.x=element_blank())+
+  labs(y ="nwchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  theme(legend.position = "none")
+p11 <- cba14 %>%
+  ggplot( aes(x=period, y=sh_bbusla_s)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(0.04,0.11)) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="sh_bbrowchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+p12 <- cba14 %>%
+  ggplot( aes(x=period, y=sh_cba)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(0.147,0.165))+
+  theme(axis.title.x=element_blank())+
+  labs(y ="sh_cln") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+
+#grid.arrange(p9, p10, p11, p12, nrow = 2)
+
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, nrow = 4)
+
+
+```
+\elandscape
+
+\newpage
+\blandscape
+```{r fig12, fig.cap="\\label{fig:fig12}Sensitivity analysis: dropping M-L condition. Source: Own elaboration.", echo=FALSE, results='asis', fig.align='center', fig.pos = 'h'}
+
+#Sensitivity analysis:  no ML condition
+external1 <- sfcr_set(
+  alpha_1la ~ 0.9,
+  alpha_1us ~ 0.6,
+  alpha_2la ~ 0.053333276,
+  alpha_2us ~ 0.213326723889398,
+  #vertical and horizontal constraints respected
+  lambda_10la ~ 0.4,
+  lambda_11la ~ 0.5,
+  lambda_12la ~ 0.5,
+  lambda_13la~ 0.25,
+  lambda_14la~ 0.25,
+  lambda_20la ~ 0.3,
+  lambda_21la ~ 0.5,
+  lambda_22la ~ 0.5,
+  lambda_23la~ 0.5,
+  lambda_40la ~ 0.4,
+  lambda_41la ~ 0.25,
+  lambda_42la ~ 5,
+  lambda_43la~ 0.5,
+  lambda_44la~ 0.25,
+  lambda_50la ~ 0.1,
+  lambda_51la ~ 0.25,
+  lambda_52la ~ 5,
+  lambda_53la~ 0.25,
+  lambda_54la~ 0.5,
+  #vertical and horizontal constraints respected
+  lambda_24la~ 5,
+  lambda_30la ~ 0.25,
+  lambda_31la ~ 5,
+  lambda_32la ~ 5,
+  lambda_33la~ 5,
+  lambda_34la~ 5,
+  #vertical and horizontal constraints respected
+  lambda_10us ~ 0.4,
+  lambda_11us ~ 0.5,
+  lambda_12us ~ 0.5,
+  lambda_13us~ 0.25,
+  lambda_14us~ 0.25,
+  lambda_20us ~ 0.3,
+  lambda_21us ~ 0.5,
+  lambda_22us ~ 0.5,
+  lambda_23us~ 0.5,
+  lambda_40us ~ 0.4,
+  lambda_41us ~ 0.25,
+  lambda_42us ~ 5,
+  lambda_43us~ 0.5,
+  lambda_44us~ 0.25,
+  lambda_50us ~ 0.1,
+  lambda_51us ~ 0.25,
+  lambda_52us ~ 5,
+  lambda_53us~ 0.25,
+  lambda_54us~ 0.5,
+  #vertical and horizontal constraints respected
+  lambda_24us~ 5,
+  lambda_30us ~ 0.25,
+  lambda_31us ~ 5,
+  lambda_32us ~ 5,
+  lambda_33us~ 5,
+  lambda_34us~ 5,
+  #vertical and horizontal constraints respected
+  lambda_60us~0.5,
+  lambda_61us~0.5,
+  lambda_62us~0.5,
+  lambda_70us~0.5,
+  lambda_71us~0.5,
+  lambda_72us~0.5,
+  lambda_60la~0.5,
+  lambda_61la~0.5,
+  lambda_62la~0.5,
+  lambda_70la~0.5,
+  lambda_71la~0.5,
+  lambda_72la~0.5,
+  #vertical and horizontal constraints respected
+  e_la ~ - 1.18,
+  eta_la ~ 0.5,
+  epsilon_la ~ 0.8,
+  p_la ~ - 3.015,
+  psi_la ~ 0.5,
+  pi_la ~  1.2,
+  mi_0la ~ - 0.00001,
+  chi_0la ~ - 0.00001,
+  mi_1la ~ 0.7,
+  chi_1la ~ 0.2,
+  phila ~ 0.2381,
+  phius ~ 0.2381,
+  thetala ~ 0.2,
+  thetaus ~ 0.2,
+  thetabla ~ 0,
+  thetabus ~ 0,
+  rho_0us~0.03,
+  rho_1us~0.9,
+  rho_2us~2.7,
+  rho_0la~0.03,
+  rho_1la~0.9,
+  rho_2la~2.7,
+  rho_0int~0.9,
+  rho_1int~0.9,
+  rho_2int~0.9,
+  # exogenous variables
+  bcblaus_s ~ 0.02031,
+  r_gla ~ 16,
+  r_gus ~ 16,
+  r_prla ~ 1.3333,
+  r_prus ~ 1.3333,
+  rla ~ 0.03,
+  rus ~ 0.03,
+  rcba~0.16,
+  rder~0.16,
+  wla ~ 1,
+  wus ~ 1
+)
+
+cba3 <- sfcr_baseline(
+  equations = eqs, 
+  external = external1,
+  initial=initial,
+  periods = 150, 
+  
+)
+
+#cba3
+
+
+cba4 <- sfcr_scenario(
+  baseline = cba3,
+  scenario = list(shock1, shock2),
+  periods = 150
+)
+
+#cba4
+
+p1 <- cba4 %>%
+  ggplot( aes(x=period, y=r_yla)) +
+  geom_line(aes(colour="CHL real output")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="ychl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none")
+p2 <- cba4 %>%
+  ggplot( aes(x=period, y=rsh_cla)) +
+  geom_line(aes(colour="CHL consumption % GDP")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="Cchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  theme(legend.position = "none")
+p3 <- cba4 %>%
+  ggplot( aes(x=period, y=sh_cabla)) +
+  geom_line( aes(color="CA % GDP"))+
+  #geom_line(aes(x=period, y=sh_tbla, color="TA % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="CA") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p4 <- cba4 %>%
+  ggplot( aes(x=period, y=sh_govdef)) +
+  geom_line(aes(color="CA % GDP")) +
+  #geom_line(aes(x=period, y=sh_govdef, color="GB % GDP")) +
+  #geom_line(aes(x=period, y=sh_prbla, color="PB % GDP")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="GB") +
+  scale_color_manual(values =c("blue", "red", "green") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+#grid.arrange(p1, p2, p3, p4, nrow = 2)
+
+p5 <- cba4 %>%
+  ggplot( aes(x=period, y = rerla)) +
+  geom_line(aes(color="RER CHL")) +
+  #geom_line(aes(y = pxla/pmla, color="TOT CHL"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="RERchl") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p6 <- cba4 %>%
+  ggplot( aes(x=period, y=cgus)) +
+  geom_line(aes(color="Capital gains on CLNs")) +
+  #geom_line(aes(x=period, y=cgbus, color="Capital gains on CHL bills"))   +
+  theme(axis.title.x=element_blank())+
+  labs(y ="GCcln") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p7 <- cba4 %>%
+  ggplot( aes(x=period, y=pcba)) +
+  geom_line(aes(color="Price of CLNs"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="pCLN") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none")
+p8 <- cba4 %>%
+  ggplot( aes(x=period, y=nip)) +
+  geom_line(aes(color="Interest payment on CHL debt % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="nipchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+
+#grid.arrange(p5, p6, p7, p8, nrow = 2)
+
+p9 <- cba4 %>%
+  ggplot( aes(x=period, y = govdeb)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(1.50,1.65)) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="govdebchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+p10 <- cba4 %>%
+  ggplot( aes(x=period, y=nwla)) +
+  #geom_bar(aes(x=period, y=nwus)) +
+  geom_bar(stat = "identity", color="red") +
+  theme(axis.title.x=element_blank())+
+  labs(y ="nwchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  theme(legend.position = "none")
+p11 <- cba4 %>%
+  ggplot( aes(x=period, y=sh_bbusla_s)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(0.04,0.11)) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="sh_bbrowchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+p12 <- cba4 %>%
+  ggplot( aes(x=period, y=sh_cba)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(0.147,0.165))+
+  theme(axis.title.x=element_blank())+
+  labs(y ="sh_cln") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+
+#grid.arrange(p9, p10, p11, p12, nrow = 2)
+
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, nrow = 4)
+
+
+```
+\elandscape
+
+\newpage
+\blandscape
+```{r fig13, fig.cap="\\label{fig:fig13}Sensitivity analysis: different demand for CHL assets for intermediaries, with the inclusion of capital gains. Source: Own elaboration.", echo=FALSE, results='asis', fig.align='center', fig.pos = 'h'}
+
+#Sensitivity analysis: different demand for CHL assets for intermediaries
+eqs1 <- sfcr_set(
+  #model creation,
+  #(1) arterial flows,
+  #income,
+  #yus~ cus+ gus +xus- imus,
+  #yla ~ cla+ gla+ xla -imla,
+  #disposable income,
+  ydus~(yus + fbus +rus[-1]*busus_d[-1]+ rdus[-1]*dus_d[-1] +cba_d[-1]+cgus)*(1-thetaus),
+  ydla~(yla + fbla + rla[-1]*blala_d[-1] + rdla[-1]*dla_d[-1]+der_d[-1]+cgla)*(1-thetala), 
+  #disposable income (hs),
+  #ydus_hs~ydus+ d(xrla)*busla_s[-1],
+  #ydla_hs~ydla+ d(xrus)*blaus_s[-1],
+  #wealth,
+  vus ~ vus[-1]+  ydus-cus,
+  vla ~ vla[-1]+ ydla-cla,
+  #capital gains,
+  cgus ~ (pcba-pcba[-1])*cba_s[-1],
+  cgla ~ (pder-pder[-1])*der_s[-1],
+  #tax,
+  tla ~ thetala*(yla+ fbla+rla[-1]*blala_d[-1]+ rdla[-1]*dla_d[-1]+der_d[-1]),
+  tus ~ thetaus*(yus+fbus +rus[-1]*busus_d[-1]+rdus[-1]*dus_d[-1] + cba_d[-1]) ,
+  #cb profits,
+  fcbla ~ rla[-1]*bcbla_d[-1] + rus[-1]*bcblaus_s[-1]*xrus,
+  fcbus ~ rus[-1]*bcbus_d[-1], 
+  #government budget constraint,
+  bla_s ~ bla_s[-1]+gla-tla+ rla[-1]*bla_s[-1] - fcbla, 
+  bus_s ~ bus_s[-1]+gus-tus+ rus[-1]*bus_s[-1] - fcbus,
+  #current and capital account,
+  cabla~xla - imla - rla[-1]*bbusla_s[-1] + rus[-1]*bblaus_s[-1]*xrus + rus[-1]*bcblaus_s[-1]*xrus ,
+  kabla ~ (bbusla_s-bbusla_s[-1]) - (bcblaus_s-bcblaus_s[-1])*xrus- (bblaus_s-bblaus_s[-1])*xrus,
+  cabus~xus - imus + rla[-1]*bbusla_s[-1]*xrla - rus[-1]*bblaus_s[-1] - rus[-1]*bcblaus_s[-1],
+  #kabus ~ -d(bbla_s)*xrla + d(blaus_s) + d(bcblaus_s),
+  #(2) trade,
+  #export and import,
+  pmla~ exp(mi_0la+  mi_1la *log(r_pusy)  + (1- mi_1la)*log(r_play) - mi_1la *log(xrla)),
+  pxla ~exp(chi_0la+  chi_1la *log(r_pusy)  + (1- chi_1la)*log(r_play)- chi_1la *log(xrla)),
+  pxus ~ pmla*xrla,  
+  pmus ~ pxla*xrla,
+  r_xla~ exp(e_la - eta_la *log(pmus/r_pusy) + epsilon_la*log(r_yus)),
+  r_imla ~ exp(p_la - psi_la *log(pmla[-1]/r_play[-1]) + pi_la*log(r_yla)),
+  r_xus  ~r_imla,
+  r_imus~r_xla,
+  xla ~ r_xla*pxla,
+  xus ~ r_xus*pxus,
+  imla ~ r_imla*pmla,  
+  imus ~ r_imus*pmus,
+  #(3) income and expenditure,
+  #real disposable income is of the haig-simon type,
+  r_vla ~ vla/r_pdsla, 
+  r_vus~ vus/r_pdsus,
+  r_ydla ~ ydla/r_pdsla - r_vla[-1]* (r_pdsla-r_pdsla[-1])/r_pdsla ,
+  r_ydus ~ ydus/r_pdsus - r_vus[-1]* (r_pdsus-r_pdsus[-1])/r_pdsus ,
+  r_cla ~ alpha_1la*r_ydlae + alpha_2la*r_vla[-1],
+  r_cus ~alpha_1us*r_yduse + alpha_2us*r_vus[-1],
+  r_ydlae~ (r_ydla + r_ydla[-1])/2,
+  r_yduse~ (r_ydus + r_ydus[-1])/2,
+  r_sla ~r_cla+r_gla+r_xla ,
+  r_sus ~r_cus+r_gus+r_xus ,
+  sla ~r_sla*r_plas,
+  sus ~r_sus*r_puss,
+  r_plas ~((1+phila)*(wla*nla+imla)) /r_sla,
+  r_puss ~((1+phius)*(wus*nus+imus)) / r_sus,
+  r_pdsla ~(sla-xla) / (r_sla-r_xla),
+  r_pdsus ~(sus-xus) / (r_sus-r_xus),
+  dsla ~sla-xla ,
+  dsus ~sus-xus ,
+  r_dsla ~r_cla+r_gla ,
+  r_dsus ~r_cus+r_gus  ,
+  yla~sla-imla,
+  yus ~sus-imus,
+  r_yla ~r_sla-r_imla ,
+  r_yus ~r_sus-r_imus ,
+  r_play ~ yla /r_yla ,
+  r_pusy ~yus/ r_yus,
+  cla ~r_cla*r_pdsla ,
+  cus ~r_cus*r_pdsus  ,
+  gla ~r_gla*r_pdsla ,
+  gus ~r_gus*r_pdsus ,
+  nla ~ r_yla/ r_prla , 
+  nus ~ r_yus/ r_prus ,
+  #(4) financial intermediaries,
+  #us financial sector,
+  bbus_d~dus_s-bbusla_d-hbus_d+pcba*cba_s,
+  #d(vbus)~fbus,
+  bbusla_d~rho_2us*cba_s+(1/5)*cgbus,
+  hbus_d~rho_0us*dus_s,
+  rdus~ rdus[-1] + rho_1us*(rus-rus[-1]),
+  cgbus ~ (xrla-xrla[-1])*bbusla_s[-1],
+  pcba~(1/rcba)+log(pmus),
+  #d(rcba)~rho_0int*,
+  #d(rlus)~rho_2us*d(rus),
+  fbus~rus[-1]*bbus_d[-1]-rdus*dus_s[-1]+rla[-1]*bbusla_d[-1]*xrla +cgbus-cba_d[-1]-cgus,
+  #la financial sector,
+  bbla_d~dla_s-bblaus_d-hbla_d+pder*der_s,
+  #d(vbla)~fbla,
+  bblaus_d~rho_2la*der_s+(1/5)*cgbla,
+  hbla_d~rho_0la*dla_s,
+  rdla ~ rdla[-1]+ rho_1la*(rla-rla[-1]),
+  cgbla ~ (xrus-xrus[-1])*bblaus_s[-1],
+  pder~1/rder,
+  #d(rder)~-rho_2int*(rla-rus),
+  #d(rlla)~rho_2la*d(rla),
+  fbla~rla[-1]*bbla_d[-1]-rdla*dla_s[-1]+rus[-1]*bblaus_d[-1]*xrus +cgbla-der_d[-1]-cgla,
+  #intermediaries,
+  #d(vint)~rus[-1]*bintus_d[-1]+rla[-1]*bintla_d[-1]*xrla +cgint-rcba[-1]*cba_d[-1],
+  #cba_s~cba_d,
+  #cgint~d(xrla)*bintla_s[-1],
+  #pcba~1/rcba,
+  #d(rcba)~rho_0int*d(pxla)-rho_1int*(rla-rus),
+  #fint~rus[-1]*bintus_d[-1]+rla[-1]*bintla_d[-1]*xrla +cgint-rcba[-1]*cba_d[-1],
+  #bintla_d~cba_s-bintus_d,
+  #(5) assets demand,
+  #asset demand for la resident,
+  blala_d~vla*(lambda_10la+lambda_11la*rla-lambda_13la*rdla-lambda_14la*(rder+dxrlae)),
+  dla_d~vla*(lambda_40la-lambda_41la*rla+lambda_43la*rdla-lambda_44la*(rder+dxrlae)),
+  der_d~(vla/pder)*(lambda_50la-lambda_51la*rla-lambda_53la*rdla+lambda_54la*(rder+dxrlae)),
+  #blaus_d~vla*(lambda_20la-lambda_21la*rla-lambda_23la*rdla+lambda_22la*(rus+dxruse)),
+  #hla_d/ vla~lambda_30la - lambda_31la*(rus+dxruse) -lambda_32la*rla,
+  #asset demand for us resident,
+  busus_d~vus*(lambda_10us +lambda_11us*rus-lambda_13us*rdus-lambda_14us*(rcba+dxruse)),
+  dus_d~vus*(lambda_40us-lambda_41us*rus+lambda_43us*rdus-lambda_44us*(rcba+dxruse)),
+  cba_d~(vus/pcba)*(lambda_50us-lambda_51us*rus-lambda_53us*rdus+lambda_54us*(rcba+dxruse)),
+  #busla_d~vus*(lambda_20us -lambda_21us*rus+lambda_22us*(rla+dxrlae)),
+  #hus_d/ vus~lambda_30us -lambda_31us*rus -lambda_32us* (rla+dxrlae),
+  #asset demand for intermediaries,
+  #bintus_d~vint*(lambda_10int + lambda_11int*rus - lambda_12int*(rla+dxrlae)),
+  #bintla_d~vint*(lambda_20int - lambda_21int*rus + lambda_22int*(rla+dxrlae)),
+  #expected change in the exchange rate (expectations to update),
+  dxrlae~d(pder)/ pder,
+  dxruse~d(pcba)/ pcba,
+  #(6) assets supply,
+  #demand for cash,
+  hus_d~ vus - busus_d- dus_d- pcba*cba_d ,
+  hla_d~ vla - blala_d-dla_d -pder*der_d,
+  #cb demand for b, h; d and cba,
+  hus_s~ hus_d,
+  hla_s~ hla_d,
+  dus_s~dus_d,
+  dla_s~dla_d,
+  busus_s~ busus_d,
+  blala_s ~blala_d,
+  cba_s~cba_d,
+  der_s~der_d,
+  bbus_s~ bbus_d,
+  bbla_s ~bbla_d,
+  #aus_s ~aus_d,
+  #ala_s ~ala_d,
+  #bintus_s~bintus_d,
+  #lus_s~lus_d,
+  #lla_s~lla_d,
+  hbus_s~hbus_d,
+  hbla_s~hbla_d,
+  #supply of domestic t bills to cb,
+  bcbus_s~ bcbus_d,
+  bcbla_s~ bcbla_d ,
+  bcbus_d ~ bcbus_d[-1]+ (hus_s-hus_s[-1])+(hbus_s-hbus_s[-1]),
+  bcbla_d ~ bcbla_d[-1]+ (hla_s-hla_s[-1])+(hbla_s-hbla_s[-1])-(bcblaus_s-bcblaus_s[-1])*xrus,
+  #supply of assets abroad ,
+  #busla_s~ bla_s- blala_s- bcbla_s,
+  #exchange rate,
+  #xrus~ blaus_d /blaus_s,
+  xrla~ 1/xrus,
+  bblaus_s~bblaus_d*xrla,
+  bcblaus_d~bcblaus_s*xrus,
+  xrus~ (bbusla_s)/(bbusla_d),
+  bbusla_s~ bla_s - blala_s- bcbla_s -  bbla_s,
+  #final equation (not possible to appear twice),
+  #blaus_s~ blaus_d /xrus,
+  rerla~(r_play/r_pusy)*(xrla),
+  rerus~1/rerla,
+  tbla~xla - imla,
+  tbus~xus - imus,
+  psbrla~d(bla_s),
+  psbrus~d(bus_s),
+  prbla~cabla+d(bla_s),
+  prbus~cabus+d(bus_s),
+  nwla~((vla)-(bla_s) +(bbla_d-dla_s+bblaus_d+hbla_d-pder*der_s)+(bcblaus_d+bcbla_d-hla_s)),
+  nwus~((vus)-(bus_s) +(bbus_d-dus_s+bbusla_d+hbus_d-pcba*cba_s)+(bcbus_d-hus_s)),
+  rsh_cla~r_cla/yla,
+  sh_cabla~cabla/yla,
+  sh_tbla~tbla/yla,
+  sh_govdef~-psbrla/yla,
+  sh_prbla~prbla/yla,
+  nip~rla[-1]*bla_s[-1]/yla,
+  govdeb~bla_s/yla,
+  sh_bbusla_s~bbusla_s/bla_s,
+  sh_cba~pcba*cba_d/r_vus,
+  totla~pxla/pmla
+)
+
+cba5 <- sfcr_baseline(
+  equations = eqs1, 
+  external = external,
+  initial=initial,
+  periods = 150, 
+  
+)
+
+#cba5
+
+
+cba6 <- sfcr_scenario(
+  baseline = cba5,
+  scenario = list(shock1, shock2),
+  periods = 150
+)
+
+#cba6
+
+p1 <- cba6 %>%
+  ggplot( aes(x=period, y=r_yla)) +
+  geom_line(aes(colour="CHL real output")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="ychl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none")
+p2 <- cba6 %>%
+  ggplot( aes(x=period, y=rsh_cla)) +
+  geom_line(aes(colour="CHL consumption % GDP")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="Cchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  theme(legend.position = "none")
+p3 <- cba6 %>%
+  ggplot( aes(x=period, y=sh_cabla)) +
+  geom_line( aes(color="CA % GDP"))+
+  #geom_line(aes(x=period, y=sh_tbla, color="TA % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="CA") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p4 <- cba6 %>%
+  ggplot( aes(x=period, y=sh_govdef)) +
+  geom_line(aes(color="CA % GDP")) +
+  #geom_line(aes(x=period, y=sh_govdef, color="GB % GDP")) +
+  #geom_line(aes(x=period, y=sh_prbla, color="PB % GDP")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="GB") +
+  scale_color_manual(values =c("blue", "red", "green") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+#grid.arrange(p1, p2, p3, p4, nrow = 2)
+
+p5 <- cba6 %>%
+  ggplot( aes(x=period, y = rerla)) +
+  geom_line(aes(color="RER CHL")) +
+  #geom_line(aes(y = pxla/pmla, color="TOT CHL"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="RERchl") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p6 <- cba6 %>%
+  ggplot( aes(x=period, y=cgus)) +
+  geom_line(aes(color="Capital gains on CLNs")) +
+  #geom_line(aes(x=period, y=cgbus, color="Capital gains on CHL bills"))   +
+  theme(axis.title.x=element_blank())+
+  labs(y ="GCcln") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p7 <- cba6 %>%
+  ggplot( aes(x=period, y=pcba)) +
+  geom_line(aes(color="Price of CLNs"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="pCLN") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none")
+p8 <- cba6 %>%
+  ggplot( aes(x=period, y=nip)) +
+  geom_line(aes(color="Interest payment on CHL debt % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="nipchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+
+#grid.arrange(p5, p6, p7, p8, nrow = 2)
+
+p9 <- cba6 %>%
+  ggplot( aes(x=period, y = govdeb)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(1.53,1.60)) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="govdebchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+p10 <- cba6 %>%
+  ggplot( aes(x=period, y=nwla)) +
+  #geom_bar(aes(x=period, y=nwus)) +
+  geom_bar(stat = "identity", color="red") +
+  theme(axis.title.x=element_blank())+
+  labs(y ="nwchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  theme(legend.position = "none")
+p11 <- cba6 %>%
+  ggplot( aes(x=period, y=sh_bbusla_s)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(0.06,0.092)) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="sh_bbrowchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+p12 <- cba6 %>%
+  ggplot( aes(x=period, y=sh_cba)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(0.150,0.162))+
+  theme(axis.title.x=element_blank())+
+  labs(y ="sh_cln") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+
+#grid.arrange(p9, p10, p11, p12, nrow = 2)
+
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, nrow = 4)
+
+
+```
+\elandscape
+
+\newpage
+\blandscape
+```{r fig14, fig.cap="\\label{fig:fig14}Sensitivity analysis: simmetric shock in the scenario. Source: Own elaboration.", echo=FALSE, results='asis', fig.align='center', fig.pos = 'h'}
+
+#Sensitivity analysis: simmetric shock
+
+
+cba7 <- sfcr_baseline(
+  equations = eqs, 
+  external = external,
+  initial=initial,
+  periods = 150, 
+  
+)
+
+#cba5
+
+
+cba8 <- sfcr_scenario(
+  baseline = cba7,
+  scenario = shock1,
+  periods = 150
+)
+
+#cba6
+
+p1 <- cba8 %>%
+  ggplot( aes(x=period, y=r_yla)) +
+  geom_line(aes(colour="CHL real output")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="ychl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none")
+p2 <- cba8 %>%
+  ggplot( aes(x=period, y=rsh_cla)) +
+  geom_line(aes(colour="CHL consumption % GDP")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="Cchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  theme(legend.position = "none")
+p3 <- cba8 %>%
+  ggplot( aes(x=period, y=sh_cabla)) +
+  geom_line( aes(color="CA % GDP"))+
+  #geom_line(aes(x=period, y=sh_tbla, color="TA % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="CA") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p4 <- cba8 %>%
+  ggplot( aes(x=period, y=sh_govdef)) +
+  geom_line(aes(color="CA % GDP")) +
+  #geom_line(aes(x=period, y=sh_govdef, color="GB % GDP")) +
+  #geom_line(aes(x=period, y=sh_prbla, color="PB % GDP")) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="GB") +
+  scale_color_manual(values =c("blue", "red", "green") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent)+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+#grid.arrange(p1, p2, p3, p4, nrow = 2)
+
+p5 <- cba8 %>%
+  ggplot( aes(x=period, y = rerla)) +
+  geom_line(aes(color="RER CHL")) +
+  #geom_line(aes(y = pxla/pmla, color="TOT CHL"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="RERchl") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p6 <- cba8 %>%
+  ggplot( aes(x=period, y=cgus)) +
+  geom_line(aes(color="Capital gains on CLNs")) +
+  #geom_line(aes(x=period, y=cgbus, color="Capital gains on CHL bills"))   +
+  theme(axis.title.x=element_blank())+
+  labs(y ="GCcln") +
+  scale_color_manual(values =c("blue", "red") )+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  guides(colour = guide_legend(nrow = 2))+
+  theme(legend.position = "none")
+p7 <- cba8 %>%
+  ggplot( aes(x=period, y=pcba)) +
+  geom_line(aes(color="Price of CLNs"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="pCLN") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none")
+p8 <- cba8 %>%
+  ggplot( aes(x=period, y=nip)) +
+  geom_line(aes(color="Interest payment on CHL debt % GDP"))  +
+  theme(axis.title.x=element_blank())+
+  labs(y ="nipchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+
+#grid.arrange(p5, p6, p7, p8, nrow = 2)
+
+p9 <- cba8 %>%
+  ggplot( aes(x=period, y = govdeb)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(1.53,1.60)) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="govdebchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+p10 <- cba8 %>%
+  ggplot( aes(x=period, y=nwla)) +
+  #geom_bar(aes(x=period, y=nwus)) +
+  geom_bar(stat = "identity", color="red") +
+  theme(axis.title.x=element_blank())+
+  labs(y ="nwchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  theme(legend.position = "none")
+p11 <- cba8 %>%
+  ggplot( aes(x=period, y=sh_bbusla_s)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(0.06,0.092)) +
+  theme(axis.title.x=element_blank())+
+  labs(y ="sh_bbrowchl") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+p12 <- cba8 %>%
+  ggplot( aes(x=period, y=sh_cba)) +
+  geom_bar(stat = "identity", color="blue") +
+  coord_cartesian(ylim=c(0.150,0.162))+
+  theme(axis.title.x=element_blank())+
+  labs(y ="sh_cln") +
+  scale_color_manual(values = "blue")+ 
+  theme(legend.position="bottom") + 
+  theme(legend.title = element_blank())+
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "none")
+
+#grid.arrange(p9, p10, p11, p12, nrow = 2)
+
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, nrow = 4)
+
+
+```
+\elandscape
